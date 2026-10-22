@@ -1,5 +1,6 @@
-// Runs every test/*.test.haml file. The files use vscode-tmgrammar-test's
-// assertion format: `-#` lines with ^ or <- markers under the source line.
+// Runs every test/*.test.haml and test/*.test.md file. The files use
+// vscode-tmgrammar-test's assertion format: `-#` (or `<!--` in Markdown) lines
+// with ^ or <- markers under the source line.
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRequire } from 'node:module';
@@ -9,7 +10,7 @@ const require = createRequire(import.meta.url);
 const { parseGrammarTestCase, runGrammarTestCase } = require('vscode-tmgrammar-test/dist/unit/index.js');
 
 const testDir = path.join(ROOT, 'test');
-const files = fs.readdirSync(testDir).filter((f) => f.endsWith('.test.haml')).sort();
+const files = fs.readdirSync(testDir).filter((f) => /\.test\.(haml|md)$/.test(f)).sort();
 const registry = await createRegistry();
 
 let assertionCount = 0;

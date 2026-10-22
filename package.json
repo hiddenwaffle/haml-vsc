@@ -46,12 +46,24 @@
         "tokenTypes": {
           "meta.text.haml - meta.interpolation.haml": "string"
         }
+      },
+      {
+        "scopeName": "markdown.haml.codeblock",
+        "path": "./syntaxes/markdown_fences.tmLanguage.json",
+        "injectTo": [
+          "text.html.markdown"
+        ],
+        "embeddedLanguages": {
+          "meta.embedded.block.haml": "haml"
+        }
       }
     ]
   },
   "scripts": {
     "test": "node scripts/run_tests.mjs",
-    "tokenize": "node scripts/tokenize.mjs"
+    "tokenize": "node scripts/tokenize.mjs",
+    "compare": "node scripts/compare.mjs",
+    "colors": "node scripts/colors.mjs"
   },
   "devDependencies": {
     "tm-grammars": "^1.32.22",

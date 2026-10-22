@@ -1,20 +1,14 @@
-// Prints the scopes the HAML grammar gives each token, for debugging.
+// Prints the scopes the HAML grammar gives each token, for debugging. Markdown
+// files (.md) are tokenized as Markdown, to check HAML code blocks.
 // Usage: npm run tokenize -- path/to/file.haml    (or pipe HAML on stdin)
 import fs from 'node:fs';
-import { createRegistry } from './registry.mjs';
+import { createRegistry, scopeForFile, tokenizeLines } from './registry.mjs';
 
 const input = process.argv[2] ? fs.readFileSync(process.argv[2], 'utf8') : fs.readFileSync(0, 'utf8');
 const registry = await createRegistry();
-const grammar = await registry.loadGrammar('text.haml');
+const grammar = await registry.loadGrammar(scopeForFile(process.argv[2]));
 
-let ruleStack = null;
-input.replace(/\n$/, '').split(/\r?\n/).forEach((line, n) => {
-  const { tokens, ruleStack: next } = grammar.tokenizeLine(line, ruleStack);
-  ruleStack = next;
+tokenizeLines(grammar, input).forEach(({ line, tokens }, n) => {
   console.log(`${String(n + 1).padStart(3)}| ${line}`);
-  for (const t of tokens) {
-    const text = line.slice(t.startIndex, t.endIndex);
-    if (!text.trim()) continue;
-    console.log(`     ${JSON.stringify(text).padEnd(24)} ${t.scopes.slice(1).join('  ')}`);
-  }
+  for (const t of tokens) console.log(`     ${t}`);
 });
