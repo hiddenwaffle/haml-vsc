@@ -1,0 +1,57 @@
+-# SYNTAX TEST "text.haml" "plain text, interpolation, escapes, doctype and raw HTML"
+Just some text
+-#<---- meta.text.haml
+Hello #{user.name}, welcome!
+-#    ^^ meta.text.haml meta.interpolation.haml punctuation.section.embedded.begin.haml
+-#      ^^^^ meta.interpolation.haml meta.embedded.line.ruby
+-#               ^ meta.interpolation.haml punctuation.section.embedded.end.haml
+-#                ^^^^^^^^^^ meta.text.haml - meta.interpolation.haml
+Nested #{ {a: 1}[:a] } braces
+-#        ^ meta.interpolation.haml punctuation.section.scope.begin.ruby
+-#             ^ punctuation.section.scope.end.ruby
+-#                   ^ punctuation.section.embedded.end.haml
+-#                     ^^^^^^ meta.text.haml - meta.interpolation.haml
+\#{escaped} stays literal
+-#<-- constant.character.escape.haml
+-#^^^^^^^^^ meta.text.haml - meta.interpolation.haml
+\= not script
+-#<- constant.character.escape.haml
+-#<~------------ meta.text.haml - punctuation.section.embedded.begin.haml
+\- not script either
+-#<- constant.character.escape.haml
+-#<~----- meta.text.haml - meta.line.script.haml
+Fish &amp; chips &#169; &#x00A9;
+-#   ^^^^^ meta.text.haml constant.character.entity.haml
+-#               ^^^^^^ constant.character.entity.haml
+-#                      ^^^^^^^^ constant.character.entity.haml
+&nbsp;starts with an entity
+-#<------ meta.text.haml constant.character.entity.haml - punctuation.definition.text.haml
+& I like #{"cheese & crackers"}
+-#<- punctuation.definition.text.haml
+-#^^^^^^ meta.text.haml
+-#       ^^ meta.interpolation.haml punctuation.section.embedded.begin.haml
+! I feel #{"<strong>"}!
+-#<- punctuation.definition.text.haml
+-#^^^^^^ meta.text.haml
+== Hello #{name}
+-#<-- punctuation.definition.text.haml
+-# ^^^^^ meta.text.haml
+&== Escaped #{name}
+-#<--- punctuation.definition.text.haml
+!== Raw #{name}
+-#<--- punctuation.definition.text.haml
+<div class="x">raw</div>
+-#<~--- entity.name.tag.html - meta.text.haml
+-#   ^^^^^ entity.other.attribute-name.html
+  <p>#{greeting}</p>
+-#   ^^ meta.interpolation.haml punctuation.section.embedded.begin.haml
+-#     ^^^^^^^^ meta.embedded.line.ruby
+!!! 5
+-#<--- meta.tag.metadata.doctype.haml entity.name.tag.doctype.haml
+-#  ^ entity.other.attribute-name.doctype.haml
+!!! XML iso-8859-1
+-#  ^^^^^^^^^^^^^^ entity.other.attribute-name.doctype.haml
+!!!
+-#<--- entity.name.tag.doctype.haml
+Lines ending with pipes |
+-#                      ^ punctuation.separator.continuation.haml

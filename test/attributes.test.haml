@@ -1,0 +1,70 @@
+-# SYNTAX TEST "text.haml" "attribute hashes, HTML-style attributes and object references"
+%a{href: "/", class: ["btn", @kind]} Go
+-#^ meta.attributes.hash.haml punctuation.section.attributes.begin.haml
+-# ^^^^ meta.attributes.hash.haml meta.embedded.line.ruby entity.other.attribute-name.haml
+-#     ^ punctuation.separator.key-value.haml
+-#       ^^^ meta.embedded.line.ruby string.quoted.double.interpolated.ruby
+-#            ^^^^^ entity.other.attribute-name.haml
+-#                           ^^^^^ meta.embedded.line.ruby variable.other.readwrite.instance.ruby
+-#                                 ^ meta.attributes.hash.haml punctuation.section.attributes.end.haml
+-#                                   ^^ meta.text.haml - meta.attributes.hash.haml
+%a{:href => url, "data-x" => 1, 'aria-label': "Open"}
+-# ^ punctuation.definition.attribute-name.haml
+-#  ^^^^ entity.other.attribute-name.haml
+-#       ^^ punctuation.separator.key-value.haml
+-#               ^^^^^^^^ entity.other.attribute-name.haml
+-#                        ^^ punctuation.separator.key-value.haml
+-#                              ^^^^^^^^^^^^ entity.other.attribute-name.haml
+-#                                            ^^^^^^ - entity.other.attribute-name.haml
+%div{data: {controller: "nav", id: 1}, title: "x"}
+-#   ^^^^ entity.other.attribute-name.haml
+-#          ^^^^^^^^^^ entity.other.attribute-name.haml
+-#                                  ^ punctuation.section.scope.end.ruby - punctuation.section.attributes.end.haml
+-#                                     ^^^^^ meta.attributes.hash.haml entity.other.attribute-name.haml
+-#                                               ^ meta.attributes.hash.haml punctuation.section.attributes.end.haml
+%a{href: "/",
+-# ^^^^ entity.other.attribute-name.haml
+   title: "Home"} Home link
+-# ^^^^^ meta.attributes.hash.haml entity.other.attribute-name.haml
+-#              ^ punctuation.section.attributes.end.haml
+-#                ^^^^^^^^^ meta.tag.haml meta.text.haml
+%p{class: x}(id="y")[@obj] Text
+-#^ punctuation.section.attributes.begin.haml
+-#          ^ meta.attributes.html.haml punctuation.section.attributes.begin.haml
+-#           ^^ meta.attributes.html.haml entity.other.attribute-name.haml
+-#              ^^^ string.quoted.double.haml
+-#                  ^ meta.object-reference.haml punctuation.section.object-reference.begin.haml
+-#                   ^^^^ meta.object-reference.haml meta.embedded.line.ruby
+-#                       ^ punctuation.section.object-reference.end.haml
+-#                         ^^^^ meta.text.haml
+%input(type="checkbox" checked name=@name value='#{v}')
+-#     ^^^^ entity.other.attribute-name.haml
+-#         ^ punctuation.separator.key-value.haml
+-#                     ^^^^^^^ entity.other.attribute-name.haml
+-#                             ^^^^ entity.other.attribute-name.haml
+-#                                  ^^^^^ meta.embedded.line.ruby - entity.other.attribute-name.haml
+-#                                        ^^^^^ entity.other.attribute-name.haml
+-#                                              ^ string.quoted.single.haml punctuation.definition.string.begin.haml
+-#                                               ^^ string.quoted.single.haml meta.interpolation.haml punctuation.section.embedded.begin.haml
+%a(href="/"
+   title="Home") Home
+-# ^^^^^ meta.attributes.html.haml entity.other.attribute-name.haml
+-#             ^ punctuation.section.attributes.end.haml
+-#               ^^^^ meta.tag.haml meta.text.haml - meta.attributes.html.haml
+%p(title="#{ {a: 1}[:a] }") x
+-#           ^ punctuation.section.scope.begin.ruby
+-#                ^ punctuation.section.scope.end.ruby
+-#                      ^ meta.interpolation.haml punctuation.section.embedded.end.haml
+-#                        ^ punctuation.section.attributes.end.haml
+-#                          ^ meta.text.haml
+%p(title="a \"quoted\" \#{literal}")
+-#          ^^ string.quoted.double.haml constant.character.escape.haml
+-#                     ^^ constant.character.escape.haml
+-#                       ^^^^^^^^^ string.quoted.double.haml - meta.interpolation.haml
+%div[@user, :card]
+-#   ^^^^^ meta.object-reference.haml meta.embedded.line.ruby
+%p{broken: true
+
+%p next
+-#<- meta.tag.haml punctuation.definition.tag.haml - meta.attributes.hash.haml
+-# ^^^^ meta.text.haml - meta.attributes.hash.haml

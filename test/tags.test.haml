@@ -1,0 +1,62 @@
+-# SYNTAX TEST "text.haml" "tags, classes, ids and inline content"
+%div
+-#<- meta.tag.haml punctuation.definition.tag.haml
+-#<~--- meta.tag.haml entity.name.tag.haml
+  %p.lead#intro Hello
+-#^ punctuation.definition.tag.haml
+-# ^ entity.name.tag.haml
+-#  ^ entity.other.attribute-name.class.haml punctuation.definition.entity.haml
+-#   ^^^^ entity.other.attribute-name.class.haml
+-#       ^ entity.other.attribute-name.id.haml punctuation.definition.entity.haml
+-#        ^^^^^ entity.other.attribute-name.id.haml
+-#              ^^^^^ meta.tag.haml meta.text.haml
+  .card.card-body
+-#^ meta.tag.haml entity.other.attribute-name.class.haml punctuation.definition.entity.haml
+-# ^^^^ entity.other.attribute-name.class.haml
+-#      ^^^^^^^^^ entity.other.attribute-name.class.haml
+  #sidebar
+-#^^^^^^^^ meta.tag.haml entity.other.attribute-name.id.haml
+  %fb:like-button
+-# ^^^^^^^^^^^^^^ entity.name.tag.haml
+  %p Text with .dots and #hashes {braces} (parens) = equals
+-#   ^^^^ meta.text.haml
+-#             ^^^^^ meta.text.haml - entity.other.attribute-name.class.haml
+-#                       ^^^^^^^ meta.text.haml - entity.other.attribute-name.id.haml
+-#                               ^^^^^^^^ meta.text.haml - meta.attributes.hash.haml
+-#                                        ^^^^^^^^ meta.text.haml - meta.attributes.html.haml
+-#                                                 ^ meta.text.haml - punctuation.section.embedded.begin.haml
+  %br/
+-#   ^ punctuation.definition.tag.self-closing.haml
+  %img>
+-#    ^ keyword.operator.whitespace.haml
+  %pre<>= text
+-#    ^^ keyword.operator.whitespace.haml
+-#      ^ punctuation.section.embedded.begin.haml
+-#        ^^^^ meta.embedded.line.ruby
+  %p= greeting
+-#  ^ punctuation.section.embedded.begin.haml
+-#    ^^^^^^^^ meta.embedded.line.ruby
+  %p!= raw_html
+-#  ^^ punctuation.section.embedded.begin.haml
+-#     ^^^^^^^^ meta.embedded.line.ruby
+  %p&= escaped
+-#  ^^ punctuation.section.embedded.begin.haml
+-#     ^^^^^^^ meta.embedded.line.ruby
+  %pre~ preserved
+-#    ^ punctuation.section.embedded.begin.haml
+-#      ^^^^^^^^^ meta.embedded.line.ruby
+  %p== Hi #{name}
+-#  ^^ punctuation.definition.text.haml
+-#     ^^ meta.text.haml
+-#        ^^ meta.interpolation.haml punctuation.section.embedded.begin.haml
+-#          ^^^^ meta.interpolation.haml meta.embedded.line.ruby
+  %p #{name} at start
+-#   ^^ meta.text.haml meta.interpolation.haml punctuation.section.embedded.begin.haml
+#{not_a_tag} line
+-#<-- meta.text.haml meta.interpolation.haml - meta.tag.haml
+...ellipsis is text
+-#<----------- meta.text.haml - meta.tag.haml
+%p
+-#<~- entity.name.tag.haml
+plain line after a tag
+-#<----- meta.text.haml - meta.tag.haml

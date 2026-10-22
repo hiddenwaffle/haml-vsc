@@ -1,0 +1,568 @@
+{
+  "name": "HAML",
+  "scopeName": "text.haml",
+  "patterns": [
+    { "include": "#silent_comment" },
+    { "include": "#conditional_comment" },
+    { "include": "#html_comment" },
+    { "include": "#doctype" },
+    { "include": "#filters" },
+    { "include": "#escaped_line" },
+    { "include": "#interpolated_text_line" },
+    { "include": "#script_line_multiline" },
+    { "include": "#script_line" },
+    { "include": "#escaped_text_line" },
+    { "include": "#tag" },
+    { "include": "#raw_html_line" },
+    { "include": "#plain_text_line" }
+  ],
+  "injections": {
+    "L:meta.filter.interpolated.haml - meta.embedded.line.ruby": {
+      "patterns": [
+        { "include": "#escaped_interpolation" },
+        { "include": "#interpolation" }
+      ]
+    }
+  },
+  "repository": {
+    "silent_comment": {
+      "name": "comment.block.silent.haml",
+      "begin": "^([ \\t]*)(-#)",
+      "beginCaptures": {
+        "2": { "name": "punctuation.definition.comment.haml" }
+      },
+      "while": "^(?=\\1[ \\t]|[ \\t]*$)"
+    },
+    "conditional_comment": {
+      "name": "comment.line.conditional.haml",
+      "match": "^[ \\t]*(/!?)(\\[[^\\]]*\\])(.*)$",
+      "captures": {
+        "1": { "name": "punctuation.definition.comment.haml" }
+      }
+    },
+    "html_comment": {
+      "name": "comment.block.html.haml",
+      "begin": "^([ \\t]*)(/)",
+      "beginCaptures": {
+        "2": { "name": "punctuation.definition.comment.haml" }
+      },
+      "while": "^(?=\\1[ \\t]|[ \\t]*$)"
+    },
+    "doctype": {
+      "name": "meta.tag.metadata.doctype.haml",
+      "match": "^[ \\t]*(!!!)(?:[ \\t]+(\\S.*?))?[ \\t]*$",
+      "captures": {
+        "1": { "name": "entity.name.tag.doctype.haml" },
+        "2": { "name": "entity.other.attribute-name.doctype.haml" }
+      }
+    },
+    "filters": {
+      "patterns": [
+        { "include": "#filter_javascript" },
+        { "include": "#filter_css" },
+        { "include": "#filter_scss" },
+        { "include": "#filter_sass" },
+        { "include": "#filter_less" },
+        { "include": "#filter_coffee" },
+        { "include": "#filter_markdown" },
+        { "include": "#filter_ruby" },
+        { "include": "#filter_erb" },
+        { "include": "#filter_text" }
+      ]
+    },
+    "filter_javascript": {
+      "name": "meta.filter.javascript.haml meta.filter.interpolated.haml",
+      "begin": "^([ \\t]*)(:javascript)[ \\t]*$",
+      "beginCaptures": {
+        "2": { "name": "entity.name.function.filter.haml" }
+      },
+      "while": "^\\1(?: {1,2}|\\t)|^(?=[ \\t]*$)",
+      "contentName": "meta.embedded.block.javascript",
+      "patterns": [{ "include": "source.js" }]
+    },
+    "filter_css": {
+      "name": "meta.filter.css.haml meta.filter.interpolated.haml",
+      "begin": "^([ \\t]*)(:css)[ \\t]*$",
+      "beginCaptures": {
+        "2": { "name": "entity.name.function.filter.haml" }
+      },
+      "while": "^\\1(?: {1,2}|\\t)|^(?=[ \\t]*$)",
+      "contentName": "meta.embedded.block.css",
+      "patterns": [{ "include": "source.css" }]
+    },
+    "filter_scss": {
+      "name": "meta.filter.scss.haml meta.filter.interpolated.haml",
+      "begin": "^([ \\t]*)(:scss)[ \\t]*$",
+      "beginCaptures": {
+        "2": { "name": "entity.name.function.filter.haml" }
+      },
+      "while": "^\\1(?: {1,2}|\\t)|^(?=[ \\t]*$)",
+      "contentName": "meta.embedded.block.scss",
+      "patterns": [{ "include": "source.css.scss" }]
+    },
+    "filter_sass": {
+      "name": "meta.filter.sass.haml meta.filter.interpolated.haml",
+      "begin": "^([ \\t]*)(:sass)[ \\t]*$",
+      "beginCaptures": {
+        "2": { "name": "entity.name.function.filter.haml" }
+      },
+      "while": "^\\1(?: {1,2}|\\t)|^(?=[ \\t]*$)",
+      "contentName": "meta.embedded.block.sass",
+      "patterns": [{ "include": "source.sass" }]
+    },
+    "filter_less": {
+      "name": "meta.filter.less.haml meta.filter.interpolated.haml",
+      "begin": "^([ \\t]*)(:less)[ \\t]*$",
+      "beginCaptures": {
+        "2": { "name": "entity.name.function.filter.haml" }
+      },
+      "while": "^\\1(?: {1,2}|\\t)|^(?=[ \\t]*$)",
+      "contentName": "meta.embedded.block.less",
+      "patterns": [{ "include": "source.css.less" }]
+    },
+    "filter_coffee": {
+      "name": "meta.filter.coffee.haml meta.filter.interpolated.haml",
+      "begin": "^([ \\t]*)(:coffee(?:script)?)[ \\t]*$",
+      "beginCaptures": {
+        "2": { "name": "entity.name.function.filter.haml" }
+      },
+      "while": "^\\1(?: {1,2}|\\t)|^(?=[ \\t]*$)",
+      "contentName": "meta.embedded.block.coffeescript",
+      "patterns": [{ "include": "source.coffee" }]
+    },
+    "filter_markdown": {
+      "name": "meta.filter.markdown.haml meta.filter.interpolated.haml",
+      "begin": "^([ \\t]*)(:markdown)[ \\t]*$",
+      "beginCaptures": {
+        "2": { "name": "entity.name.function.filter.haml" }
+      },
+      "while": "^\\1(?: {1,2}|\\t)|^(?=[ \\t]*$)",
+      "contentName": "meta.embedded.block.markdown",
+      "patterns": [{ "include": "text.html.markdown" }]
+    },
+    "filter_ruby": {
+      "name": "meta.filter.ruby.haml",
+      "begin": "^([ \\t]*)(:ruby)[ \\t]*$",
+      "beginCaptures": {
+        "2": { "name": "entity.name.function.filter.haml" }
+      },
+      "while": "^\\1(?: {1,2}|\\t)|^(?=[ \\t]*$)",
+      "contentName": "meta.embedded.block.ruby",
+      "patterns": [{ "include": "source.ruby" }]
+    },
+    "filter_erb": {
+      "name": "meta.filter.erb.haml",
+      "begin": "^([ \\t]*)(:erb)[ \\t]*$",
+      "beginCaptures": {
+        "2": { "name": "entity.name.function.filter.haml" }
+      },
+      "while": "^\\1(?: {1,2}|\\t)|^(?=[ \\t]*$)",
+      "contentName": "meta.embedded.block.erb",
+      "patterns": [
+        { "include": "text.html.erb" },
+        { "include": "text.html.basic" }
+      ]
+    },
+    "filter_text": {
+      "name": "meta.filter.haml",
+      "begin": "^([ \\t]*)(:[-\\w]+)[ \\t]*$",
+      "beginCaptures": {
+        "2": { "name": "entity.name.function.filter.haml" }
+      },
+      "while": "^\\1(?: {1,2}|\\t)|^(?=[ \\t]*$)",
+      "contentName": "meta.text.haml",
+      "patterns": [{ "include": "#text" }]
+    },
+    "escaped_line": {
+      "match": "^[ \\t]*(\\\\)(?!#\\{)(.*)$",
+      "captures": {
+        "1": { "name": "constant.character.escape.haml" },
+        "2": {
+          "name": "meta.text.haml",
+          "patterns": [{ "include": "#text" }]
+        }
+      }
+    },
+    "interpolated_text_line": {
+      "match": "^[ \\t]*(&==|!==|==)(.*)$",
+      "captures": {
+        "1": { "name": "punctuation.definition.text.haml" },
+        "2": {
+          "name": "meta.text.haml",
+          "patterns": [{ "include": "#text" }]
+        }
+      }
+    },
+    "script_line_multiline": {
+      "name": "meta.line.script.haml",
+      "begin": "^([ \\t]*)(&=|!=|&~|!~|=|~|-(?!#))(?=.*[ \\t]\\|[ \\t]*$)",
+      "beginCaptures": {
+        "2": { "name": "punctuation.section.embedded.begin.haml" }
+      },
+      "while": "^(?=.*[ \\t]\\|[ \\t]*$)",
+      "contentName": "meta.embedded.line.ruby",
+      "patterns": [
+        { "include": "#multiline_pipe" },
+        { "include": "source.ruby" }
+      ]
+    },
+    "script_line": {
+      "name": "meta.line.script.haml",
+      "begin": "^([ \\t]*)(&=|!=|&~|!~|=|~|-(?!#))",
+      "beginCaptures": {
+        "2": { "name": "punctuation.section.embedded.begin.haml" }
+      },
+      "end": "$",
+      "patterns": [{ "include": "#script_body" }]
+    },
+    "script_body": {
+      "patterns": [
+        {
+          "comment": "Ruby that ends in a comma continues on the next line. Each line is tokenized on its own so an unclosed bracket cannot swallow the rest of the file.",
+          "begin": "(?=.*,[ \\t]*$)",
+          "end": "(?<=[^,\\s])(?=[ \\t]*$)|^(?=[ \\t]*$)",
+          "patterns": [
+            {
+              "match": "(.*\\S)",
+              "captures": {
+                "1": {
+                  "name": "meta.embedded.line.ruby",
+                  "patterns": [{ "include": "source.ruby" }]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "comment": "Single-line Ruby is tokenized in isolation so an unclosed construct cannot spill onto later lines.",
+          "match": "(.+)",
+          "captures": {
+            "1": {
+              "name": "meta.embedded.line.ruby",
+              "patterns": [{ "include": "source.ruby" }]
+            }
+          }
+        }
+      ]
+    },
+    "escaped_text_line": {
+      "match": "^[ \\t]*(&|!)(?=[ \\t]|#\\{)(.*)$",
+      "captures": {
+        "1": { "name": "punctuation.definition.text.haml" },
+        "2": {
+          "name": "meta.text.haml",
+          "patterns": [{ "include": "#text" }]
+        }
+      }
+    },
+    "tag": {
+      "name": "meta.tag.haml",
+      "begin": "^([ \\t]*)(?=[%.#][-:\\w])(?:(%)([-:\\w]+))?((?:[.#][-:\\w]+)*)",
+      "beginCaptures": {
+        "2": { "name": "punctuation.definition.tag.haml" },
+        "3": { "name": "entity.name.tag.haml" },
+        "4": { "patterns": [{ "include": "#class_and_id" }] }
+      },
+      "end": "$",
+      "patterns": [
+        { "include": "#attributes_hash" },
+        { "include": "#attributes_html" },
+        { "include": "#object_reference" },
+        { "include": "#whitespace_removal" },
+        { "include": "#self_closing" },
+        { "include": "#inline_interpolated_text" },
+        { "include": "#inline_script" },
+        { "include": "#inline_text" }
+      ]
+    },
+    "class_and_id": {
+      "patterns": [
+        {
+          "name": "entity.other.attribute-name.class.haml",
+          "match": "(\\.)[-:\\w]+",
+          "captures": {
+            "1": { "name": "punctuation.definition.entity.haml" }
+          }
+        },
+        {
+          "name": "entity.other.attribute-name.id.haml",
+          "match": "(#)[-:\\w]+",
+          "captures": {
+            "1": { "name": "punctuation.definition.entity.haml" }
+          }
+        }
+      ]
+    },
+    "attributes_hash": {
+      "name": "meta.attributes.hash.haml",
+      "begin": "\\{",
+      "beginCaptures": {
+        "0": { "name": "punctuation.section.attributes.begin.haml" }
+      },
+      "end": "\\}|^(?=[ \\t]*$)",
+      "endCaptures": {
+        "0": { "name": "punctuation.section.attributes.end.haml" }
+      },
+      "contentName": "meta.embedded.line.ruby",
+      "patterns": [{ "include": "#attribute_hash_contents" }]
+    },
+    "attribute_hash_contents": {
+      "patterns": [
+        { "include": "#ruby_hash_key" },
+        { "include": "#attribute_hash_nested" },
+        { "include": "source.ruby" }
+      ]
+    },
+    "attribute_hash_nested": {
+      "begin": "\\{",
+      "beginCaptures": {
+        "0": { "name": "punctuation.section.scope.begin.ruby" }
+      },
+      "end": "\\}|^(?=[ \\t]*$)",
+      "endCaptures": {
+        "0": { "name": "punctuation.section.scope.end.ruby" }
+      },
+      "patterns": [{ "include": "#attribute_hash_contents" }]
+    },
+    "ruby_hash_key": {
+      "patterns": [
+        {
+          "comment": "Ruby 1.9 style: class: or \"data-x\":",
+          "match": "(?<![\\w:@$])([A-Za-z_]\\w*[?!]?|\"[^\"]*\"|'[^']*')(:)(?!:)",
+          "captures": {
+            "1": { "name": "entity.other.attribute-name.haml" },
+            "2": { "name": "punctuation.separator.key-value.haml" }
+          }
+        },
+        {
+          "comment": "Hash rocket style with a symbol key: :class =>",
+          "match": "(:)([A-Za-z_]\\w*[?!]?|\"[^\"]*\"|'[^']*')[ \\t]*(=>)",
+          "captures": {
+            "1": { "name": "punctuation.definition.attribute-name.haml" },
+            "2": { "name": "entity.other.attribute-name.haml" },
+            "3": { "name": "punctuation.separator.key-value.haml" }
+          }
+        },
+        {
+          "comment": "Hash rocket style with a string key: \"class\" =>",
+          "match": "(\"[^\"]*\"|'[^']*')[ \\t]*(=>)",
+          "captures": {
+            "1": { "name": "entity.other.attribute-name.haml" },
+            "2": { "name": "punctuation.separator.key-value.haml" }
+          }
+        }
+      ]
+    },
+    "attributes_html": {
+      "name": "meta.attributes.html.haml",
+      "begin": "\\(",
+      "beginCaptures": {
+        "0": { "name": "punctuation.section.attributes.begin.haml" }
+      },
+      "end": "\\)|^(?=[ \\t]*$)",
+      "endCaptures": {
+        "0": { "name": "punctuation.section.attributes.end.haml" }
+      },
+      "patterns": [
+        {
+          "comment": "name=@variable: an unquoted value is a Ruby variable.",
+          "match": "([^\\s=()\"'{}]+)[ \\t]*(=)[ \\t]*((?:@@?|\\$)?[A-Za-z_]\\w*)",
+          "captures": {
+            "1": { "name": "entity.other.attribute-name.haml" },
+            "2": { "name": "punctuation.separator.key-value.haml" },
+            "3": {
+              "name": "meta.embedded.line.ruby",
+              "patterns": [{ "include": "source.ruby" }]
+            }
+          }
+        },
+        {
+          "match": "([^\\s=()\"'{}]+)[ \\t]*(=)",
+          "captures": {
+            "1": { "name": "entity.other.attribute-name.haml" },
+            "2": { "name": "punctuation.separator.key-value.haml" }
+          }
+        },
+        {
+          "name": "entity.other.attribute-name.haml",
+          "match": "[^\\s=()\"'{}]+"
+        },
+        { "include": "#string_double" },
+        { "include": "#string_single" }
+      ]
+    },
+    "string_double": {
+      "name": "string.quoted.double.haml",
+      "begin": "\"",
+      "beginCaptures": {
+        "0": { "name": "punctuation.definition.string.begin.haml" }
+      },
+      "end": "\"",
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.string.end.haml" }
+      },
+      "patterns": [
+        { "include": "#string_escape" },
+        { "include": "#interpolation" }
+      ]
+    },
+    "string_single": {
+      "name": "string.quoted.single.haml",
+      "begin": "'",
+      "beginCaptures": {
+        "0": { "name": "punctuation.definition.string.begin.haml" }
+      },
+      "end": "'",
+      "endCaptures": {
+        "0": { "name": "punctuation.definition.string.end.haml" }
+      },
+      "patterns": [
+        { "include": "#string_escape" },
+        { "include": "#interpolation" }
+      ]
+    },
+    "string_escape": {
+      "name": "constant.character.escape.haml",
+      "match": "\\\\."
+    },
+    "object_reference": {
+      "name": "meta.object-reference.haml",
+      "begin": "\\[",
+      "beginCaptures": {
+        "0": { "name": "punctuation.section.object-reference.begin.haml" }
+      },
+      "end": "\\]|^(?=[ \\t]*$)",
+      "endCaptures": {
+        "0": { "name": "punctuation.section.object-reference.end.haml" }
+      },
+      "contentName": "meta.embedded.line.ruby",
+      "patterns": [
+        { "include": "#ruby_brackets" },
+        { "include": "source.ruby" }
+      ]
+    },
+    "ruby_brackets": {
+      "begin": "\\[",
+      "beginCaptures": {
+        "0": { "name": "punctuation.section.array.begin.ruby" }
+      },
+      "end": "\\]",
+      "endCaptures": {
+        "0": { "name": "punctuation.section.array.end.ruby" }
+      },
+      "patterns": [
+        { "include": "#ruby_brackets" },
+        { "include": "source.ruby" }
+      ]
+    },
+    "ruby_braces": {
+      "begin": "\\{",
+      "beginCaptures": {
+        "0": { "name": "punctuation.section.scope.begin.ruby" }
+      },
+      "end": "\\}",
+      "endCaptures": {
+        "0": { "name": "punctuation.section.scope.end.ruby" }
+      },
+      "patterns": [
+        { "include": "#ruby_braces" },
+        { "include": "source.ruby" }
+      ]
+    },
+    "whitespace_removal": {
+      "name": "keyword.operator.whitespace.haml",
+      "match": "[<>]{1,2}"
+    },
+    "self_closing": {
+      "name": "punctuation.definition.tag.self-closing.haml",
+      "match": "/(?=[ \\t]*$)"
+    },
+    "inline_interpolated_text": {
+      "match": "(&==|!==|==)(.*)$",
+      "captures": {
+        "1": { "name": "punctuation.definition.text.haml" },
+        "2": {
+          "name": "meta.text.haml",
+          "patterns": [{ "include": "#text" }]
+        }
+      }
+    },
+    "inline_script": {
+      "begin": "(&=|!=|&~|!~|=|~)",
+      "beginCaptures": {
+        "1": { "name": "punctuation.section.embedded.begin.haml" }
+      },
+      "end": "$",
+      "patterns": [{ "include": "#script_body" }]
+    },
+    "inline_text": {
+      "match": "[ \\t]+(.*)$",
+      "captures": {
+        "1": {
+          "name": "meta.text.haml",
+          "patterns": [{ "include": "#text" }]
+        }
+      }
+    },
+    "raw_html_line": {
+      "match": "^[ \\t]*(<.*)$",
+      "captures": {
+        "1": {
+          "patterns": [
+            { "include": "#interpolation" },
+            { "include": "text.html.basic" }
+          ]
+        }
+      }
+    },
+    "plain_text_line": {
+      "match": "^[ \\t]*(.+)$",
+      "captures": {
+        "1": {
+          "name": "meta.text.haml",
+          "patterns": [{ "include": "#text" }]
+        }
+      }
+    },
+    "text": {
+      "patterns": [
+        { "include": "#escaped_interpolation" },
+        { "include": "#interpolation" },
+        { "include": "#html_entity" },
+        { "include": "#multiline_pipe" }
+      ]
+    },
+    "interpolation": {
+      "name": "meta.interpolation.haml",
+      "begin": "#\\{",
+      "beginCaptures": {
+        "0": { "name": "punctuation.section.embedded.begin.haml" }
+      },
+      "end": "\\}",
+      "endCaptures": {
+        "0": { "name": "punctuation.section.embedded.end.haml" }
+      },
+      "contentName": "meta.embedded.line.ruby",
+      "patterns": [
+        { "include": "#ruby_braces" },
+        { "include": "source.ruby" }
+      ]
+    },
+    "escaped_interpolation": {
+      "name": "constant.character.escape.haml",
+      "match": "\\\\#(?=\\{)"
+    },
+    "html_entity": {
+      "name": "constant.character.entity.haml",
+      "match": "(&)(?:[a-zA-Z][a-zA-Z0-9]*|#[0-9]+|#[xX][0-9a-fA-F]+)(;)",
+      "captures": {
+        "1": { "name": "punctuation.definition.entity.haml" },
+        "2": { "name": "punctuation.definition.entity.haml" }
+      }
+    },
+    "multiline_pipe": {
+      "name": "punctuation.separator.continuation.haml",
+      "match": "(?<=[ \\t])\\|(?=[ \\t]*$)"
+    }
+  }
+}

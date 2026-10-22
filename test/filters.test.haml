@@ -1,0 +1,67 @@
+-# SYNTAX TEST "text.haml" "filters"
+:javascript
+-#<----------- meta.filter.javascript.haml entity.name.function.filter.haml
+  var x = "#{y}";
+-#^^^ meta.embedded.block.javascript storage.type.js
+-#         ^^ meta.embedded.block.javascript meta.interpolation.haml punctuation.section.embedded.begin.haml
+-#           ^ meta.interpolation.haml meta.embedded.line.ruby
+  /* unclosed comment
+-#   ^^^^^^^^ meta.embedded.block.javascript comment.block.js
+%p after js
+-#<- meta.tag.haml punctuation.definition.tag.haml - meta.embedded.block.javascript
+  :css
+-#^^^^ meta.filter.css.haml entity.name.function.filter.haml
+    a { color: red; }
+-#      ^^^^^ meta.embedded.block.css
+
+    b { }
+-#  ^ meta.embedded.block.css
+  %p after css
+-#^ meta.tag.haml - meta.embedded.block.css
+:ruby
+-#<----- meta.filter.ruby.haml entity.name.function.filter.haml
+  x = "#{y}"
+-#     ^^ meta.embedded.block.ruby - meta.interpolation.haml
+:scss
+  .a { .b { c: d } }
+-#^^ meta.embedded.block.scss
+:sass
+  .a
+    color: red
+-#  ^^^^^ meta.embedded.block.sass
+:less
+  @x: 1px;
+-#^^ meta.embedded.block.less
+:coffee
+  square = (x) -> x * x
+-#^^^^^^ meta.embedded.block.coffeescript
+:coffeescript
+  y = 1
+-#^ meta.embedded.block.coffeescript
+:markdown
+  # Title
+-#^ meta.embedded.block.markdown markup.heading.markdown
+  Text with #{name}
+-#          ^^ meta.embedded.block.markdown meta.interpolation.haml
+:erb
+  <p><%= x %></p>
+-# ^ meta.embedded.block.erb entity.name.tag.html
+:plain
+  plain #{x} text
+-#^^^^^ meta.filter.haml meta.text.haml
+-#      ^^ meta.text.haml meta.interpolation.haml
+  - not script inside a filter
+-#^^^^^^^^^^^^ meta.text.haml - meta.line.script.haml
+:my-custom-filter
+-#<----------------- entity.name.function.filter.haml
+  anything
+-#^^^^^^^^ meta.filter.haml meta.text.haml
+%p end
+-#<- meta.tag.haml - meta.filter.haml
+	:javascript
+		tabbed();
+-#^^^^^^ meta.embedded.block.javascript
+	%p tab sibling
+-#<~- meta.tag.haml - meta.embedded.block.javascript
+:javascript not a filter because of trailing text
+-#<----------- meta.text.haml - entity.name.function.filter.haml

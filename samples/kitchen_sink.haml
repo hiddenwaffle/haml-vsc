@@ -1,0 +1,53 @@
+!!! 5
+-# A silent comment: nothing here is rendered.
+   This nested line is also silent.
+%html{lang: "en"}
+  %head
+    %meta(charset="utf-8")/
+    %title= @page_title || "Kitchen sink"
+    :css
+      body { color: #d8dee9; }
+      .note::before { content: "#{t('note')}"; }
+    :javascript
+      const user = #{current_user.to_json};
+      console.log(`Hello ${user.name}`);
+  %body.page#top{class: ["dark", @extra], data: {controller: "nav", turbo: false}}
+    / An HTML comment that ends up in the output.
+    /[if IE]
+      %p.warning Please upgrade your browser.
+    #main.container.fluid
+      %h1.title Welcome, #{@user.name}!
+      %p Plain text with an &amp; entity and \#{not interpolated}.
+      %a(href="/posts/#{post.id}" title=@title data-turbo="false") Read more
+      %a{:href => post_path(post), "aria-label" => "Open"}= post.title
+      %div[@user, :card]
+        %img{src: image_url("logo.png"), alt: ""}/
+        %p<= link_to "Home",
+          root_path,
+          class: "nav-link"
+      - @items.each do |item|
+        %li{id: dom_id(item)}
+          = item.name
+          - if item.featured?
+            %span.badge Featured
+          - else
+            %span.badge.muted Regular
+      %p
+        = render partial: "shared/footer",
+          locals: { year: Time.current.year }
+      &= "Escaped <output>"
+      != "<strong>raw</strong>"
+      == Interpolated #{Time.now.year} text
+      \= This line starts with an equals sign but is plain text.
+      <div class="raw">Raw HTML passes through</div>
+    :ruby
+      greeting = "Hi"
+      def shout(s) = s.upcase
+    :markdown
+      # Heading
+
+      Some *emphasis* and `code`, plus #{interpolated} text.
+    :plain
+      Plain filter text with #{interpolation}.
+    %footer
+      %p= "Copyright #{Time.current.year}"

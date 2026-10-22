@@ -1,0 +1,62 @@
+{
+  "name": "haml-vsc",
+  "displayName": "HAML Syntax",
+  "description": "Syntax highlighting for HAML templates, with embedded Ruby, JavaScript, CSS and other filters.",
+  "version": "0.1.0",
+  "publisher": "local",
+  "private": true,
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "haml",
+        "aliases": [
+          "HAML",
+          "Haml",
+          "haml"
+        ],
+        "extensions": [
+          ".haml"
+        ],
+        "configuration": "./language_configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "haml",
+        "scopeName": "text.haml",
+        "path": "./syntaxes/haml.tmLanguage.json",
+        "embeddedLanguages": {
+          "meta.embedded.line.ruby": "ruby",
+          "meta.embedded.block.ruby": "ruby",
+          "meta.embedded.block.javascript": "javascript",
+          "meta.embedded.block.css": "css",
+          "meta.embedded.block.scss": "scss",
+          "meta.embedded.block.sass": "sass",
+          "meta.embedded.block.less": "less",
+          "meta.embedded.block.coffeescript": "coffeescript",
+          "meta.embedded.block.markdown": "markdown",
+          "meta.embedded.block.erb": "erb"
+        },
+        "tokenTypes": {
+          "meta.text.haml - meta.interpolation.haml": "string"
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "test": "node scripts/run_tests.mjs",
+    "tokenize": "node scripts/tokenize.mjs"
+  },
+  "devDependencies": {
+    "tm-grammars": "^1.32.22",
+    "vscode-oniguruma": "^2.0.1",
+    "vscode-textmate": "^9.3.2",
+    "vscode-tmgrammar-test": "^0.1.3"
+  }
+}

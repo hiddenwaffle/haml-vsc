@@ -1,0 +1,70 @@
+-# SYNTAX TEST "text.haml" "Ruby script lines"
+- if signed_in?
+-#<- meta.line.script.haml punctuation.section.embedded.begin.haml
+-#^^ meta.embedded.line.ruby keyword.control.ruby
+  = link_to "Out", logout_path
+-#^ punctuation.section.embedded.begin.haml
+-#          ^^^^^ meta.embedded.line.ruby string.quoted.double.interpolated.ruby
+- else
+-#^^^^ meta.embedded.line.ruby keyword.control.ruby
+  ~ preserve(text)
+-#^ punctuation.section.embedded.begin.haml
+-#  ^^^^^^^^ meta.embedded.line.ruby
+!= raw
+-#<-- punctuation.section.embedded.begin.haml
+-# ^^^ meta.embedded.line.ruby
+&= escaped
+-#<-- punctuation.section.embedded.begin.haml
+-# ^^^^^^^ meta.embedded.line.ruby
+&~ kept
+-#<-- punctuation.section.embedded.begin.haml
+!~ kept
+-#<-- punctuation.section.embedded.begin.haml
+- # a Ruby comment
+-#<- punctuation.section.embedded.begin.haml - comment.block.silent.haml
+-#^^^^^^^^^^^^^^^^ meta.embedded.line.ruby comment.line.number-sign.ruby
+= render "a",
+-#^^^^^^ meta.embedded.line.ruby
+  locals: { x: 1 },
+-#^^^^^^ meta.embedded.line.ruby - meta.text.haml
+  layout: false
+-#        ^^^^^ meta.embedded.line.ruby constant.language.boolean.ruby
+%p after continuation
+-#<- meta.tag.haml punctuation.definition.tag.haml - meta.embedded.line.ruby
+= "unclosed string
+%p next
+-#<- meta.tag.haml punctuation.definition.tag.haml - string.quoted.double.interpolated.ruby
+- foo(1,
+
+%p back
+-#<- meta.tag.haml - meta.embedded.line.ruby
+= "a" + |
+-#      ^ punctuation.separator.continuation.haml
+  "b" |
+-#^^^ meta.embedded.line.ruby string.quoted.double.interpolated.ruby
+-#    ^ punctuation.separator.continuation.haml
+%p not continued
+-#<- meta.tag.haml punctuation.definition.tag.haml - meta.embedded.line.ruby
+- items.each do |x|
+-#           ^^ meta.embedded.line.ruby keyword.control.start-block.ruby
+-#              ^^^ meta.embedded.line.ruby - punctuation.separator.continuation.haml
+  %li= x
+-#^ meta.tag.haml punctuation.definition.tag.haml
+%p= link_to "Home",
+  root_path
+-#^^^^^^^^^ meta.tag.haml meta.embedded.line.ruby
+%p done
+-#<- punctuation.definition.tag.haml - meta.embedded.line.ruby
+= "comma, inside" + x
+%p fine
+-#<- meta.tag.haml - meta.embedded.line.ruby
+= link_to("Home",
+-#^^^^^^^ meta.embedded.line.ruby
+  root_path)   
+-#^^^^^^^^^ meta.embedded.line.ruby
+%p after a continuation with trailing spaces
+-#<- meta.tag.haml punctuation.definition.tag.haml - meta.embedded.line.ruby
+%p= form_with(model: @post,
+
+%p after an unclosed bracket
+-#<- meta.tag.haml punctuation.definition.tag.haml - meta.embedded.line.ruby

@@ -1,0 +1,31 @@
+-# SYNTAX TEST "text.haml" "silent, HTML and conditional comments"
+-# silent
+-#<-- comment.block.silent.haml punctuation.definition.comment.haml
+-# ^^^^^^ comment.block.silent.haml
+  nested silent %p
+-#^^^^^^^^^^^^^^^^ comment.block.silent.haml - meta.tag.haml
+
+    deeper after blank
+-#  ^^^^^^^^^^^^^^^^^^ comment.block.silent.haml
+%p back to haml
+-#<- meta.tag.haml punctuation.definition.tag.haml - comment.block.silent.haml
+  -# indented silent
+-#^^ comment.block.silent.haml punctuation.definition.comment.haml
+  %p sibling is code
+-#^ meta.tag.haml - comment.block.silent.haml
+/ html comment
+-#<- comment.block.html.haml punctuation.definition.comment.haml
+-#^^^^^^^^^^^^ comment.block.html.haml
+/
+-#<- comment.block.html.haml punctuation.definition.comment.haml
+  %p commented out
+-#^^^^^^^^^^^^^^^^ comment.block.html.haml - meta.tag.haml
+/[if IE]
+-#<- comment.line.conditional.haml punctuation.definition.comment.haml
+-#<~------- comment.line.conditional.haml
+  %p.ie Shown to IE
+-#^ meta.tag.haml punctuation.definition.tag.haml - comment.line.conditional.haml
+/![if !IE]
+-#<-- comment.line.conditional.haml punctuation.definition.comment.haml
+- # ruby comment is script
+-#<- punctuation.section.embedded.begin.haml - comment.block.silent.haml
