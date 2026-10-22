@@ -68,3 +68,59 @@
 %p next
 -#<- meta.tag.haml punctuation.definition.tag.haml - meta.attributes.hash.haml
 -# ^^^^ meta.text.haml - meta.attributes.hash.haml
+%td(colspan=2)= x
+-#          ^ meta.attributes.html.haml meta.embedded.line.ruby - entity.other.attribute-name.haml
+%p{"data-#{k}": 1} t
+-#       ^^ meta.embedded.line.ruby - entity.other.attribute-name.haml
+%a{href: "/x
+%p Don't panic
+
+%p one
+-#<- meta.tag.haml punctuation.definition.tag.haml - meta.attributes.hash.haml
+-# ^^^ meta.text.haml - string.quoted.single.ruby
+%a{href: url_for(a
+
+%p two
+-#<- meta.tag.haml punctuation.definition.tag.haml - meta.attributes.hash.haml meta.function-call.ruby
+%a{class: %w(a b
+
+%p three
+-#<- meta.tag.haml punctuation.definition.tag.haml - meta.attributes.hash.haml
+%li[@x, "a
+
+%p four
+-#<- meta.tag.haml punctuation.definition.tag.haml - meta.object-reference.haml
+%li[@x, [1
+
+%p five
+-#<- meta.tag.haml punctuation.definition.tag.haml - meta.object-reference.haml
+%a(title="unclosed
+%p six
+-# ^^^ meta.attributes.html.haml - string.quoted.double.haml
+
+%p seven
+-#<- meta.tag.haml punctuation.definition.tag.haml - meta.attributes.html.haml
+%a(href="/u/#{u.id)
+  %p child
+-#   ^^^^^ meta.attributes.html.haml - meta.interpolation.haml string.quoted.double.haml
+
+%p eight
+-#<- meta.tag.haml punctuation.definition.tag.haml - meta.attributes.html.haml
+%a(title="#{foo(")
+
+%p nine
+-#<- meta.tag.haml punctuation.definition.tag.haml - meta.attributes.html.haml
+%a{title: "x #{y}
+
+%p ten
+-#<- meta.tag.haml punctuation.definition.tag.haml - meta.attributes.hash.haml
+%a{data: items.map { |i| i.id }, title: "t"} done
+-#                               ^^^^^ meta.attributes.hash.haml entity.other.attribute-name.haml
+-#                                           ^^^^ meta.tag.haml meta.text.haml - meta.attributes.hash.haml
+%a{class: %w[btn btn-primary], id: "x"} ok
+-#                             ^^ entity.other.attribute-name.haml
+-#                                      ^^ meta.text.haml - meta.attributes.hash.haml
+%a{class: item.status} x
+-#             ^^^^^^ meta.attributes.hash.haml meta.embedded.line.ruby meta.function-call.ruby entity.name.function.ruby
+%div[item.owner] y
+-#        ^^^^^ meta.object-reference.haml meta.function-call.ruby entity.name.function.ruby

@@ -7,6 +7,7 @@
     { "include": "#html_comment" },
     { "include": "#doctype" },
     { "include": "#filters" },
+    { "include": "#text_multiline" },
     { "include": "#escaped_line" },
     { "include": "#interpolated_text_line" },
     { "include": "#script_line_multiline" },
@@ -14,14 +15,26 @@
     { "include": "#escaped_text_line" },
     { "include": "#tag" },
     { "include": "#raw_html_line" },
+    { "include": "#lone_pipe_line" },
     { "include": "#plain_text_line" }
   ],
   "injections": {
     "L:meta.filter.interpolated.haml - meta.embedded.line.ruby": {
       "patterns": [
         { "include": "#escaped_interpolation" },
-        { "include": "#interpolation" }
+        { "include": "#interpolation" },
+        { "include": "#interpolation_variable" }
       ]
+    },
+    "L:meta.raw-html.haml - meta.embedded.line.ruby": {
+      "patterns": [
+        { "include": "#escaped_interpolation" },
+        { "include": "#interpolation" },
+        { "include": "#interpolation_variable" }
+      ]
+    },
+    "L:meta.multiline.haml": {
+      "patterns": [{ "include": "#multiline_pipe" }]
     }
   },
   "repository": {
@@ -41,16 +54,22 @@
       }
     },
     "html_comment": {
+      "comment": "HAML evaluates interpolation in HTML comments, so it keeps its Ruby colors here.",
       "name": "comment.block.html.haml",
       "begin": "^([ \\t]*)(/)",
       "beginCaptures": {
         "2": { "name": "punctuation.definition.comment.haml" }
       },
-      "while": "^(?=\\1[ \\t]|[ \\t]*$)"
+      "while": "^(?=\\1[ \\t]|[ \\t]*$)",
+      "patterns": [
+        { "include": "#escaped_interpolation" },
+        { "include": "#interpolation" },
+        { "include": "#interpolation_variable" }
+      ]
     },
     "doctype": {
       "name": "meta.tag.metadata.doctype.haml",
-      "match": "^[ \\t]*(!!!)(?:[ \\t]+(\\S.*?))?[ \\t]*$",
+      "match": "^[ \\t]*(!!!)(?:[ \\t]*(\\S.*?))?[ \\t]*$",
       "captures": {
         "1": { "name": "entity.name.tag.doctype.haml" },
         "2": { "name": "entity.other.attribute-name.doctype.haml" }
@@ -72,7 +91,7 @@
     },
     "filter_javascript": {
       "name": "meta.filter.javascript.haml meta.filter.interpolated.haml",
-      "begin": "^([ \\t]*)(:javascript)[ \\t]*$",
+      "begin": "^([ \\t]*)(:(?i:javascript))[ \\t]*$",
       "beginCaptures": {
         "2": { "name": "entity.name.function.filter.haml" }
       },
@@ -82,7 +101,7 @@
     },
     "filter_css": {
       "name": "meta.filter.css.haml meta.filter.interpolated.haml",
-      "begin": "^([ \\t]*)(:css)[ \\t]*$",
+      "begin": "^([ \\t]*)(:(?i:css))[ \\t]*$",
       "beginCaptures": {
         "2": { "name": "entity.name.function.filter.haml" }
       },
@@ -92,7 +111,7 @@
     },
     "filter_scss": {
       "name": "meta.filter.scss.haml meta.filter.interpolated.haml",
-      "begin": "^([ \\t]*)(:scss)[ \\t]*$",
+      "begin": "^([ \\t]*)(:(?i:scss))[ \\t]*$",
       "beginCaptures": {
         "2": { "name": "entity.name.function.filter.haml" }
       },
@@ -102,7 +121,7 @@
     },
     "filter_sass": {
       "name": "meta.filter.sass.haml meta.filter.interpolated.haml",
-      "begin": "^([ \\t]*)(:sass)[ \\t]*$",
+      "begin": "^([ \\t]*)(:(?i:sass))[ \\t]*$",
       "beginCaptures": {
         "2": { "name": "entity.name.function.filter.haml" }
       },
@@ -112,7 +131,7 @@
     },
     "filter_less": {
       "name": "meta.filter.less.haml meta.filter.interpolated.haml",
-      "begin": "^([ \\t]*)(:less)[ \\t]*$",
+      "begin": "^([ \\t]*)(:(?i:less))[ \\t]*$",
       "beginCaptures": {
         "2": { "name": "entity.name.function.filter.haml" }
       },
@@ -122,7 +141,7 @@
     },
     "filter_coffee": {
       "name": "meta.filter.coffee.haml meta.filter.interpolated.haml",
-      "begin": "^([ \\t]*)(:coffee(?:script)?)[ \\t]*$",
+      "begin": "^([ \\t]*)(:(?i:coffee(?:script)?))[ \\t]*$",
       "beginCaptures": {
         "2": { "name": "entity.name.function.filter.haml" }
       },
@@ -132,7 +151,7 @@
     },
     "filter_markdown": {
       "name": "meta.filter.markdown.haml meta.filter.interpolated.haml",
-      "begin": "^([ \\t]*)(:markdown)[ \\t]*$",
+      "begin": "^([ \\t]*)(:(?i:markdown))[ \\t]*$",
       "beginCaptures": {
         "2": { "name": "entity.name.function.filter.haml" }
       },
@@ -142,17 +161,18 @@
     },
     "filter_ruby": {
       "name": "meta.filter.ruby.haml",
-      "begin": "^([ \\t]*)(:ruby)[ \\t]*$",
+      "comment": "Unlike the other filters, the while does not consume the indentation, so Ruby rules anchored to the line start, such as heredoc terminators, still match.",
+      "begin": "^([ \\t]*)(:(?i:ruby))[ \\t]*$",
       "beginCaptures": {
         "2": { "name": "entity.name.function.filter.haml" }
       },
-      "while": "^\\1(?: {1,2}|\\t)|^(?=[ \\t]*$)",
+      "while": "^(?=\\1[ \\t]|[ \\t]*$)",
       "contentName": "meta.embedded.block.ruby",
       "patterns": [{ "include": "source.ruby" }]
     },
     "filter_erb": {
       "name": "meta.filter.erb.haml",
-      "begin": "^([ \\t]*)(:erb)[ \\t]*$",
+      "begin": "^([ \\t]*)(:(?i:erb))[ \\t]*$",
       "beginCaptures": {
         "2": { "name": "entity.name.function.filter.haml" }
       },
@@ -171,13 +191,34 @@
       },
       "while": "^\\1(?: {1,2}|\\t)|^(?=[ \\t]*$)",
       "contentName": "meta.text.haml",
+      "patterns": [{ "include": "#text_interpolated" }]
+    },
+    "text_multiline": {
+      "comment": "A text line ending in a space and a pipe. HAML joins the following pipe lines into it before deciding what kind of line it is, so every continuation line is text, whatever it starts with.",
+      "name": "meta.multiline.haml",
+      "begin": "^(?=[ \\t]*\\S.* \\|[ \\t]*$)(?![ \\t]*(?:[-~]|[&!]?=(?!=)|[&!]~|%[-:\\w]|\\.[-:\\w@]|#[-:\\w]))(?!.*do\\s*\\|\\s*[^|]*\\s+\\|[ \\t]*$)(.*)$",
+      "beginCaptures": {
+        "1": {
+          "patterns": [
+            { "include": "#escaped_line" },
+            { "include": "#interpolated_text_line" },
+            { "include": "#escaped_text_line" },
+            { "include": "#raw_html_line" },
+            { "include": "#plain_text_line" }
+          ]
+        }
+      },
+      "while": "^(?:(?=[ \\t]*$)|(?=[ \\t]*\\S.* \\|[ \\t]*$)(?!.*do\\s*\\|\\s*[^|]*\\s+\\|[ \\t]*$))",
+      "contentName": "meta.text.haml",
       "patterns": [{ "include": "#text" }]
     },
     "escaped_line": {
-      "match": "^[ \\t]*(\\\\)(?!#\\{)(.*)$",
+      "comment": "The backslash escapes only the line type: interpolation after it still applies. Backslashes right after it are counted here, because escaped_interpolation's lookbehind would see the line escape.",
+      "match": "^[ \\t]*(\\\\)((?:\\\\\\\\)*\\\\#(?=[{@$])|(?:\\\\\\\\)+(?=#[{@$]))?(.*)$",
       "captures": {
         "1": { "name": "constant.character.escape.haml" },
-        "2": {
+        "2": { "name": "meta.text.haml constant.character.escape.haml" },
+        "3": {
           "name": "meta.text.haml",
           "patterns": [{ "include": "#text" }]
         }
@@ -194,12 +235,13 @@
       }
     },
     "script_line_multiline": {
-      "name": "meta.line.script.haml",
-      "begin": "^([ \\t]*)(&=|!=|&~|!~|=|~|-(?!#))(?=.*[ \\t]\\|[ \\t]*$)",
+      "comment": "HAML joins a line ending in a space and a pipe with the following lines that also end that way, skipping blank lines. Block arguments written with spaces (do | x |) are not continuations.",
+      "name": "meta.line.script.haml meta.multiline.haml",
+      "begin": "^([ \\t]*)(&=|!=|&~|!~|=|~|-(?!#))(?=.* \\|[ \\t]*$)(?!.*do\\s*\\|\\s*[^|]*\\s+\\|[ \\t]*$)",
       "beginCaptures": {
         "2": { "name": "punctuation.section.embedded.begin.haml" }
       },
-      "while": "^(?=.*[ \\t]\\|[ \\t]*$)",
+      "while": "^(?:(?=[ \\t]*$)|(?=[ \\t]*\\S.* \\|[ \\t]*$)(?!.*do\\s*\\|\\s*[^|]*\\s+\\|[ \\t]*$))",
       "contentName": "meta.embedded.line.ruby",
       "patterns": [
         { "include": "#multiline_pipe" },
@@ -218,16 +260,19 @@
     "script_body": {
       "patterns": [
         {
-          "comment": "Ruby that ends in a comma continues on the next line. Each line is tokenized on its own so an unclosed bracket cannot swallow the rest of the file.",
-          "begin": "(?=.*,[ \\t]*$)",
-          "end": "(?<=[^,\\s])(?=[ \\t]*$)|^(?=[ \\t]*$)",
+          "comment": "Ruby that ends in a comma continues on the next line, unless the comma is a character literal (?, or ?\\,). Each line is tokenized on its own so an unclosed bracket cannot swallow the rest of the file.",
+          "begin": "(?=.*,[ \\t]*$)(?!.*(?:\\W\\?|\\?\\\\),[ \\t]*$)",
+          "end": "(?<=[^,\\s]|\\W\\?,|\\?\\\\,)(?=[ \\t]*$)|^(?=[ \\t]*$)",
           "patterns": [
             {
               "match": "(.*\\S)",
               "captures": {
                 "1": {
                   "name": "meta.embedded.line.ruby",
-                  "patterns": [{ "include": "source.ruby" }]
+                  "patterns": [
+                    { "include": "#ruby_method_at_end" },
+                    { "include": "source.ruby" }
+                  ]
                 }
               }
             }
@@ -239,11 +284,22 @@
           "captures": {
             "1": {
               "name": "meta.embedded.line.ruby",
-              "patterns": [{ "include": "source.ruby" }]
+              "patterns": [
+                { "include": "#ruby_method_at_end" },
+                { "include": "source.ruby" }
+              ]
             }
           }
         }
       ]
+    },
+    "ruby_method_at_end": {
+      "comment": "Ruby tokenized on its own ends with nothing after it, and source.ruby needs a following character to see a method call after a dot. This covers that last word.",
+      "name": "meta.function-call.ruby",
+      "match": "(?<=[^.]\\.|::)([A-Za-z][!0-9?A-Z_a-z]*)$",
+      "captures": {
+        "1": { "name": "entity.name.function.ruby" }
+      }
     },
     "escaped_text_line": {
       "match": "^[ \\t]*(&|!)(?=[ \\t]|#\\{)(.*)$",
@@ -257,13 +313,14 @@
     },
     "tag": {
       "name": "meta.tag.haml",
-      "begin": "^([ \\t]*)(?=[%.#][-:\\w])(?:(%)([-:\\w]+))?((?:[.#][-:\\w]+)*)",
+      "begin": "^([ \\t]*)(?=%[-:\\w]|\\.[-:\\w@]|#[-:\\w])(?:(%)([-:\\w]+))?((?:[.#][-:\\w@]+)*)",
       "beginCaptures": {
         "2": { "name": "punctuation.definition.tag.haml" },
         "3": { "name": "entity.name.tag.haml" },
         "4": { "patterns": [{ "include": "#class_and_id" }] }
       },
-      "end": "$",
+      "comment": "Also ends at the start of a line, so the tag closes when a multiline block inside it ends.",
+      "end": "$|^",
       "patterns": [
         { "include": "#attributes_hash" },
         { "include": "#attributes_html" },
@@ -271,7 +328,10 @@
         { "include": "#whitespace_removal" },
         { "include": "#self_closing" },
         { "include": "#inline_interpolated_text" },
+        { "include": "#inline_script_multiline" },
         { "include": "#inline_script" },
+        { "include": "#inline_text_marker" },
+        { "include": "#inline_text_multiline" },
         { "include": "#inline_text" }
       ]
     },
@@ -279,14 +339,14 @@
       "patterns": [
         {
           "name": "entity.other.attribute-name.class.haml",
-          "match": "(\\.)[-:\\w]+",
+          "match": "(\\.)[-:\\w@]+",
           "captures": {
             "1": { "name": "punctuation.definition.entity.haml" }
           }
         },
         {
           "name": "entity.other.attribute-name.id.haml",
-          "match": "(#)[-:\\w]+",
+          "match": "(#)[-:\\w@]+",
           "captures": {
             "1": { "name": "punctuation.definition.entity.haml" }
           }
@@ -308,9 +368,8 @@
     },
     "attribute_hash_contents": {
       "patterns": [
-        { "include": "#ruby_hash_key" },
         { "include": "#attribute_hash_nested" },
-        { "include": "source.ruby" }
+        { "include": "#ruby_run_hash" }
       ]
     },
     "attribute_hash_nested": {
@@ -328,7 +387,7 @@
       "patterns": [
         {
           "comment": "Ruby 1.9 style: class: or \"data-x\":",
-          "match": "(?<![\\w:@$])([A-Za-z_]\\w*[?!]?|\"[^\"]*\"|'[^']*')(:)(?!:)",
+          "match": "(?<![\\w:@$])([A-Za-z_]\\w*[?!]?|\"(?:[^\"#]|#(?![{@$]))*\"|'[^']*')(:)(?!:)",
           "captures": {
             "1": { "name": "entity.other.attribute-name.haml" },
             "2": { "name": "punctuation.separator.key-value.haml" }
@@ -336,7 +395,7 @@
         },
         {
           "comment": "Hash rocket style with a symbol key: :class =>",
-          "match": "(:)([A-Za-z_]\\w*[?!]?|\"[^\"]*\"|'[^']*')[ \\t]*(=>)",
+          "match": "(:)([A-Za-z_]\\w*[?!]?|\"(?:[^\"#]|#(?![{@$]))*\"|'[^']*')[ \\t]*(=>)",
           "captures": {
             "1": { "name": "punctuation.definition.attribute-name.haml" },
             "2": { "name": "entity.other.attribute-name.haml" },
@@ -345,7 +404,7 @@
         },
         {
           "comment": "Hash rocket style with a string key: \"class\" =>",
-          "match": "(\"[^\"]*\"|'[^']*')[ \\t]*(=>)",
+          "match": "(\"(?:[^\"#]|#(?![{@$]))*\"|'[^']*')[ \\t]*(=>)",
           "captures": {
             "1": { "name": "entity.other.attribute-name.haml" },
             "2": { "name": "punctuation.separator.key-value.haml" }
@@ -365,8 +424,8 @@
       },
       "patterns": [
         {
-          "comment": "name=@variable: an unquoted value is a Ruby variable.",
-          "match": "([^\\s=()\"'{}]+)[ \\t]*(=)[ \\t]*((?:@@?|\\$)?[A-Za-z_]\\w*)",
+          "comment": "name=@variable or name=2: an unquoted value is Ruby.",
+          "match": "([^\\s=()\"'{}]+)[ \\t]*(=)[ \\t]*((?:@@?|\\$)?\\w+)",
           "captures": {
             "1": { "name": "entity.other.attribute-name.haml" },
             "2": { "name": "punctuation.separator.key-value.haml" },
@@ -397,13 +456,14 @@
       "beginCaptures": {
         "0": { "name": "punctuation.definition.string.begin.haml" }
       },
-      "end": "\"",
+      "comment": "HAML attribute values never continue onto the next line, so an unclosed one ends with its line.",
+      "end": "\"|$",
       "endCaptures": {
         "0": { "name": "punctuation.definition.string.end.haml" }
       },
       "patterns": [
         { "include": "#string_escape" },
-        { "include": "#interpolation" }
+        { "include": "#attribute_interpolation" }
       ]
     },
     "string_single": {
@@ -412,13 +472,13 @@
       "beginCaptures": {
         "0": { "name": "punctuation.definition.string.begin.haml" }
       },
-      "end": "'",
+      "end": "'|$",
       "endCaptures": {
         "0": { "name": "punctuation.definition.string.end.haml" }
       },
       "patterns": [
         { "include": "#string_escape" },
-        { "include": "#interpolation" }
+        { "include": "#attribute_interpolation" }
       ]
     },
     "string_escape": {
@@ -438,7 +498,7 @@
       "contentName": "meta.embedded.line.ruby",
       "patterns": [
         { "include": "#ruby_brackets" },
-        { "include": "source.ruby" }
+        { "include": "#ruby_run_brackets" }
       ]
     },
     "ruby_brackets": {
@@ -446,13 +506,13 @@
       "beginCaptures": {
         "0": { "name": "punctuation.section.array.begin.ruby" }
       },
-      "end": "\\]",
+      "end": "\\]|^(?=[ \\t]*$)",
       "endCaptures": {
         "0": { "name": "punctuation.section.array.end.ruby" }
       },
       "patterns": [
         { "include": "#ruby_brackets" },
-        { "include": "source.ruby" }
+        { "include": "#ruby_run_brackets" }
       ]
     },
     "ruby_braces": {
@@ -460,13 +520,67 @@
       "beginCaptures": {
         "0": { "name": "punctuation.section.scope.begin.ruby" }
       },
-      "end": "\\}",
+      "end": "\\}|^(?=[ \\t]*$)",
       "endCaptures": {
         "0": { "name": "punctuation.section.scope.end.ruby" }
       },
       "patterns": [
         { "include": "#ruby_braces" },
-        { "include": "source.ruby" }
+        { "include": "#ruby_run_braces" }
+      ]
+    },
+    "ruby_run_hash": {
+      "comment": "Ruby up to the next brace outside a string, tokenized on its own so an unclosed string or call cannot run past its line. The braces themselves are matched by this grammar.",
+      "match": "(?:\"(?:[^\"\\\\]|\\\\.)*+\"?|'(?:[^'\\\\]|\\\\.)*+'?|%[qQwWiIsr]?\\{[^}]*+\\}?|[^{}\"'])++",
+      "captures": {
+        "0": {
+          "patterns": [
+            { "include": "#ruby_hash_key" },
+            { "include": "#ruby_method_at_end" },
+            { "include": "source.ruby" }
+          ]
+        }
+      }
+    },
+    "ruby_run_braces": {
+      "comment": "As ruby_run_hash, without attribute names.",
+      "match": "(?:\"(?:[^\"\\\\]|\\\\.)*+\"?|'(?:[^'\\\\]|\\\\.)*+'?|%[qQwWiIsr]?\\{[^}]*+\\}?|[^{}\"'])++",
+      "captures": {
+        "0": {
+          "patterns": [
+            { "include": "#ruby_method_at_end" },
+            { "include": "source.ruby" }
+          ]
+        }
+      }
+    },
+    "ruby_run_brackets": {
+      "comment": "As ruby_run_braces, stopping at square brackets instead.",
+      "match": "(?:\"(?:[^\"\\\\]|\\\\.)*+\"?|'(?:[^'\\\\]|\\\\.)*+'?|%[qQwWiIsr]?\\[[^\\]]*+\\]?|[^\\[\\]\"'])++",
+      "captures": {
+        "0": {
+          "patterns": [
+            { "include": "#ruby_method_at_end" },
+            { "include": "source.ruby" }
+          ]
+        }
+      }
+    },
+    "attribute_interpolation": {
+      "comment": "#{} inside an HTML-style attribute value, which cannot continue onto the next line.",
+      "name": "meta.interpolation.haml",
+      "begin": "#\\{",
+      "beginCaptures": {
+        "0": { "name": "punctuation.section.embedded.begin.haml" }
+      },
+      "end": "\\}|$",
+      "endCaptures": {
+        "0": { "name": "punctuation.section.embedded.end.haml" }
+      },
+      "contentName": "meta.embedded.line.ruby",
+      "patterns": [
+        { "include": "#ruby_braces" },
+        { "include": "#ruby_run_braces" }
       ]
     },
     "whitespace_removal": {
@@ -487,6 +601,20 @@
         }
       }
     },
+    "inline_script_multiline": {
+      "comment": "Ruby after a tag that continues with a trailing pipe, under the same rules as script_line_multiline.",
+      "name": "meta.multiline.haml",
+      "begin": "(&=|!=|&~|!~|=|~)(?=.* \\|[ \\t]*$)(?!.*do\\s*\\|\\s*[^|]*\\s+\\|[ \\t]*$)",
+      "beginCaptures": {
+        "1": { "name": "punctuation.section.embedded.begin.haml" }
+      },
+      "while": "^(?:(?=[ \\t]*$)|(?=[ \\t]*\\S.* \\|[ \\t]*$)(?!.*do\\s*\\|\\s*[^|]*\\s+\\|[ \\t]*$))",
+      "contentName": "meta.embedded.line.ruby",
+      "patterns": [
+        { "include": "#multiline_pipe" },
+        { "include": "source.ruby" }
+      ]
+    },
     "inline_script": {
       "begin": "(&=|!=|&~|!~|=|~)",
       "beginCaptures": {
@@ -495,8 +623,22 @@
       "end": "$",
       "patterns": [{ "include": "#script_body" }]
     },
+    "inline_text_marker": {
+      "comment": "& or ! after a tag, not followed by = or ~, escapes or unescapes the plain text after it.",
+      "name": "punctuation.definition.text.haml",
+      "match": "[&!](?![=~])"
+    },
+    "inline_text_multiline": {
+      "comment": "Inline text that continues with a trailing pipe. HAML joins the lines before deciding what they are, so every continuation line is text.",
+      "name": "meta.multiline.haml",
+      "begin": "(?=.* \\|[ \\t]*$)(?!.*do\\s*\\|\\s*[^|]*\\s+\\|[ \\t]*$)",
+      "while": "^(?:(?=[ \\t]*$)|(?=[ \\t]*\\S.* \\|[ \\t]*$)(?!.*do\\s*\\|\\s*[^|]*\\s+\\|[ \\t]*$))",
+      "contentName": "meta.text.haml",
+      "patterns": [{ "include": "#text" }]
+    },
     "inline_text": {
-      "match": "[ \\t]+(.*)$",
+      "comment": "Text may follow the tag or its attributes directly, without a space.",
+      "match": "[ \\t]*(\\S.*)$",
       "captures": {
         "1": {
           "name": "meta.text.haml",
@@ -505,15 +647,19 @@
       }
     },
     "raw_html_line": {
+      "comment": "HAML treats the line as plain text, so interpolation applies anywhere in it, including inside HTML attribute values and comments. The meta.raw-html.haml injection provides it.",
       "match": "^[ \\t]*(<.*)$",
       "captures": {
         "1": {
-          "patterns": [
-            { "include": "#interpolation" },
-            { "include": "text.html.basic" }
-          ]
+          "name": "meta.raw-html.haml",
+          "patterns": [{ "include": "text.html.basic" }]
         }
       }
+    },
+    "lone_pipe_line": {
+      "comment": "A line holding only a pipe is literal text: HAML needs a space before the pipe, after the indentation.",
+      "name": "meta.text.haml",
+      "match": "^[ \\t]*\\|[ \\t]*$"
     },
     "plain_text_line": {
       "match": "^[ \\t]*(.+)$",
@@ -526,10 +672,17 @@
     },
     "text": {
       "patterns": [
+        { "include": "#text_interpolated" },
+        { "include": "#multiline_pipe" }
+      ]
+    },
+    "text_interpolated": {
+      "comment": "Text without the multiline pipe, for filters, where HAML keeps a trailing pipe as text.",
+      "patterns": [
         { "include": "#escaped_interpolation" },
         { "include": "#interpolation" },
-        { "include": "#html_entity" },
-        { "include": "#multiline_pipe" }
+        { "include": "#interpolation_variable" },
+        { "include": "#html_entity" }
       ]
     },
     "interpolation": {
@@ -545,12 +698,33 @@
       "contentName": "meta.embedded.line.ruby",
       "patterns": [
         { "include": "#ruby_braces" },
-        { "include": "source.ruby" }
+        { "include": "#ruby_run_braces" }
       ]
     },
+    "interpolation_variable": {
+      "comment": "#@ivar and #$gvar interpolate like #{}.",
+      "name": "meta.interpolation.haml",
+      "match": "(#)((?:@|\\$)\\w+)",
+      "captures": {
+        "1": { "name": "punctuation.section.embedded.begin.haml" },
+        "2": {
+          "name": "meta.embedded.line.ruby",
+          "patterns": [{ "include": "source.ruby" }]
+        }
+      }
+    },
     "escaped_interpolation": {
-      "name": "constant.character.escape.haml",
-      "match": "\\\\#(?=\\{)"
+      "comment": "HAML counts the backslashes before #{, #@ or #$: an odd number makes it literal, and an even number still interpolates.",
+      "patterns": [
+        {
+          "name": "constant.character.escape.haml",
+          "match": "(?<!\\\\)(?:\\\\\\\\)*\\\\#(?=[{@$])"
+        },
+        {
+          "name": "constant.character.escape.haml",
+          "match": "(?<!\\\\)(?:\\\\\\\\)+(?=#[{@$])"
+        }
+      ]
     },
     "html_entity": {
       "name": "constant.character.entity.haml",
@@ -562,7 +736,7 @@
     },
     "multiline_pipe": {
       "name": "punctuation.separator.continuation.haml",
-      "match": "(?<=[ \\t])\\|(?=[ \\t]*$)"
+      "match": "(?<= )\\|(?=[ \\t]*$)"
     }
   }
 }

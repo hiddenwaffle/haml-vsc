@@ -60,3 +60,26 @@
 -#<~- entity.name.tag.haml
 plain line after a tag
 -#<----- meta.text.haml - meta.tag.haml
+%a{href: "#"}Link
+-#           ^^^^ meta.tag.haml meta.text.haml
+%p(class="x")text
+-#           ^^^^ meta.tag.haml meta.text.haml
+%p<text
+-# ^^^^ meta.tag.haml meta.text.haml
+%p& Fish & chips
+-#^ meta.tag.haml punctuation.definition.text.haml
+-#  ^^^^^^^^^^^^ meta.text.haml
+%p!text
+-#^ punctuation.definition.text.haml
+-# ^^^^ meta.text.haml
+%p&#{x}
+-#^ punctuation.definition.text.haml
+-# ^^ meta.text.haml meta.interpolation.haml - meta.attributes.hash.haml
+%p{a: 1}#{x} more
+-#      ^^ meta.text.haml meta.interpolation.haml - meta.attributes.hash.haml
+%p.u-1@sm text
+-# ^^^^^^ entity.other.attribute-name.class.haml
+.@container.p-4
+-#<~---------- meta.tag.haml entity.other.attribute-name.class.haml
+#@not_an_id plain text
+-#<----------- meta.text.haml - meta.tag.haml

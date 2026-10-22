@@ -68,3 +68,58 @@
 
 %p after an unclosed bracket
 -#<- meta.tag.haml punctuation.definition.tag.haml - meta.embedded.line.ruby
+%whoo
+  %hoo= h(                       |
+-# ^^^ meta.tag.haml entity.name.tag.haml
+-#    ^ meta.tag.haml punctuation.section.embedded.begin.haml
+-#      ^^ meta.tag.haml meta.embedded.line.ruby
+-#                               ^ meta.tag.haml punctuation.separator.continuation.haml - keyword.operator.other.ruby
+    "I think this might get " +  |
+-#  ^^^^^^^^^^^^^^^^^^^^^^^^^ meta.tag.haml meta.embedded.line.ruby string.quoted.double.interpolated.ruby - meta.text.haml
+-#                               ^ punctuation.separator.continuation.haml - meta.text.haml
+    "look awful.")               |
+-#  ^^^^^^^^^^^^^ meta.embedded.line.ruby string.quoted.double.interpolated.ruby
+-#               ^ meta.embedded.line.ruby - meta.text.haml
+-#                               ^ punctuation.separator.continuation.haml
+  %p This is short.
+-#^ meta.tag.haml punctuation.definition.tag.haml - meta.embedded.line.ruby
+-#   ^^^^^^^^^^^^^^ meta.tag.haml meta.text.haml - meta.embedded.line.ruby
+%p= [1, |
+
+  2] |
+-#^^ meta.embedded.line.ruby - meta.text.haml
+%p after a blank line inside a multiline block
+-#<- meta.tag.haml punctuation.definition.tag.haml - meta.embedded.line.ruby
+= h( |
+-#   ^ punctuation.separator.continuation.haml - keyword.operator.other.ruby
+  "x") |
+-#^^^ meta.embedded.line.ruby string.quoted.double.interpolated.ruby
+%p after a multiline script line
+-#<- meta.tag.haml punctuation.definition.tag.haml - meta.embedded.line.ruby
+- items.each do | x |
+-#              ^^^^^ meta.embedded.line.ruby - punctuation.separator.continuation.haml
+  %li= x
+-#^ meta.tag.haml punctuation.definition.tag.haml - meta.embedded.line.ruby
+%ul= items.map do | x |
+-#                ^^^^^ meta.embedded.line.ruby - punctuation.separator.continuation.haml
+  %li= x
+-#^ meta.tag.haml punctuation.definition.tag.haml - meta.embedded.line.ruby
+%p Long text |
+-#           ^ punctuation.separator.continuation.haml
+  continues here |
+-#^^^^^^^^^^^^^^ meta.text.haml - meta.embedded.line.ruby
+= a | b
+-#  ^ meta.embedded.line.ruby - punctuation.separator.continuation.haml
+= c == ?,
+%p f
+-#<- meta.tag.haml punctuation.definition.tag.haml - meta.embedded.line.ruby
+= c.x?,
+  y
+-#^ meta.embedded.line.ruby
+%p g
+-#<- meta.tag.haml punctuation.definition.tag.haml - meta.embedded.line.ruby
+= item.name
+-#     ^^^^ meta.embedded.line.ruby meta.function-call.ruby entity.name.function.ruby
+= link_to "x",
+  item.path
+-#     ^^^^ meta.embedded.line.ruby meta.function-call.ruby entity.name.function.ruby

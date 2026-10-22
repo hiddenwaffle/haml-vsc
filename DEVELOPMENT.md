@@ -76,31 +76,38 @@ Each root rule matches from the start of a line, and the first matching rule in 
 | `html_comment` | `/` and the block indented under it |
 | `doctype` | `!!!` |
 | `filters` | `:javascript`, `:css` and every other filter |
-| `escaped_line` | `\` followed by literal text |
+| `text_multiline` | Text lines that continue with a trailing pipe, whatever the continuation lines start with |
+| `escaped_line` | `\` followed by text. It escapes only the line type, so `#{}` after it still interpolates |
 | `interpolated_text_line` | `==`, `&==` and `!==` |
 | `script_line_multiline` | Ruby lines that continue with a trailing pipe |
 | `script_line` | Ruby after `-`, `=`, `~`, `!=`, `&=`, `!~` and `&~` |
 | `escaped_text_line` | `&` or `!` followed by text |
 | `tag` | `%p`, `.class` and `#id`, with attributes, `<` `>`, `/` and inline content as sub-rules |
-| `raw_html_line` | Lines that start with `<` |
+| `raw_html_line` | Lines that start with `<`, which HAML treats as plain text |
+| `lone_pipe_line` | A line holding only a pipe character, which is text rather than a continuation |
 | `plain_text_line` | Everything else, scoped `meta.text.haml` |
 
 ### Indented blocks
 
 Comments and filters are `begin`/`while` rules. The `begin` captures the line's indentation, and the `while` continues the block for every line that is indented deeper or blank. When the `while` fails, TextMate closes every rule opened inside the block, so an embedded grammar can't leak past its filter.
 
-A filter's `while` consumes the filter's indentation plus one level (one or two spaces, or a tab), so the embedded grammar sees roughly what it would in a file of its own. The embedded scope still starts at the first column of each line, which comment toggling relies on (see [Language configuration](#language-configuration)).
+A filter's `while` consumes the filter's indentation plus one level (one or two spaces, or a tab), so the embedded grammar sees roughly what it would in a file of its own. The embedded scope still starts at the first column of each line, which comment toggling relies on (see [Language configuration](#language-configuration)). `:ruby` is the exception: its `while` consumes nothing, so Ruby rules anchored to the line start, such as heredoc terminators, still match.
 
 ### Ruby
 
 - Ruby after a script marker is a single capture, tokenized with `source.ruby` on its own. A capture can't extend past its own text, so an unclosed string or bracket stays on its line.
-- A line ending in a comma continues on the next line, as in HAML. Each continuation line is its own isolated capture, and the block ends at the first line without a trailing comma, or at a blank line. A string literal that spans lines therefore loses its string color after the first line.
-- Attribute hashes `{}`, HTML-style attributes `()` and object references `[]` are `begin`/`end` rules, because they can span lines. Each also ends at a blank line, which limits the damage of an unclosed bracket while typing.
+- Inside attribute hashes, object references and `#{}`, the grammar matches the braces and brackets itself and hands Ruby the text between them in stretches, each tokenized on its own (`ruby_run_hash`, `ruby_run_braces` and `ruby_run_brackets`). A stretch skips over strings and ends with its line, so an unclosed string or call can't run on, and an unclosed bracket ends at the next blank line.
+- Ruby tokenized on its own has nothing after its last word, and `source.ruby` needs a following character to recognize a method call after a dot. `ruby_method_at_end` colors that final `.method`.
+- A line ending in a comma continues on the next line, as in HAML, unless the comma is a character literal (`?,`). Each continuation line is its own isolated capture, and the block ends at the first line without a trailing comma, or at a blank line. A string literal that spans lines therefore loses its string color after the first line.
+- A line ending in a space and `|` is joined with the following lines that end the same way, skipping blank lines, as in HAML. Block arguments written with spaces (`do | x |`) don't count. `script_line_multiline` and `inline_script_multiline` handle Ruby at the start of a line and after a tag, and `text_multiline` and `inline_text_multiline` do the same for text, so a continuation line that starts with `-`, `=` or `#` stays text. All four are `begin`/`while` blocks. An `L:` injection on `meta.multiline.haml` marks each trailing `|` even inside an open bracket or string. The `tag` rule also ends at the start of a line, so it closes when such a block inside it ends.
+- Attribute hashes `{}`, HTML-style attributes `()` and object references `[]` are `begin`/`end` rules, because they can span lines. Each also ends at a blank line, which limits the damage of an unclosed bracket while typing. HTML-style attribute values, and `#{}` inside them, end with their line, because HAML never continues them.
 - All Ruby carries `meta.embedded.line.ruby`, which `package.json` maps to the `ruby` language.
 
 ### Interpolation
 
-`#{}` is the `interpolation` rule, included directly in plain text, attribute strings and generic filters. JavaScript, CSS, SCSS, Sass, Less, CoffeeScript and Markdown filters carry the extra scope `meta.filter.interpolated.haml`, and an `L:` injection on that scope adds `#{}` with priority over the embedded grammar's own rules. `:ruby` and `:erb` don't carry it, since Ruby already handles `#{}` in its strings and ERB uses `<%= %>`.
+`#{}` is the `interpolation` rule, and `#@ivar` and `#$gvar` are `interpolation_variable`. Both are included directly in plain text, generic filters and HTML comments. JavaScript, CSS, SCSS, Sass, Less, CoffeeScript and Markdown filters carry the extra scope `meta.filter.interpolated.haml`, and raw HTML lines carry `meta.raw-html.haml`. An `L:` injection on each adds interpolation with priority over the embedded grammar's own rules, so it also works inside HTML attribute values and JavaScript strings. `:ruby` doesn't carry it, since Ruby handles `#{}` in its own strings, and neither does `:erb`, which HAML passes to ERB without interpolating.
+
+Backslashes before `#{`, `#@` or `#$` are counted, as HAML does: an odd number makes the interpolation literal, and an even number still interpolates. HTML-style attribute values use their own `attribute_interpolation`, which ends with its line.
 
 ### Filters
 
@@ -116,6 +123,8 @@ A filter's `while` consumes the filter's indentation plus one level (one or two 
 | `:markdown` | `text.html.markdown` | `markdown` |
 | `:erb` | `text.html.erb`, then `text.html.basic` | `erb` |
 | Any other name | Plain text with `#{}` | `haml` |
+
+Filter names match in any case, because HAML lowercases them. Generic filters keep a trailing ` |` as text, because HAML doesn't join lines inside a filter.
 
 `embeddedLanguages` in `package.json` maps each `meta.embedded.*` scope to a language, which VS Code uses for comment toggling and bracket matching inside the region. VS Code skips language ids that no installed extension registers, and a missing grammar leaves its content uncolored. That is why `sass` and `erb` are safe to list even where no extension provides them.
 
@@ -164,8 +173,12 @@ Read from VS Code's source but not tested:
 
 ## Known limitations
 
-- After a tag, `|` multiline Ruby (`%p= "a" + |`) is highlighted as Ruby only on its first line. At the start of a line it works fully.
 - While an attribute hash or attribute list is being typed, lines after an unclosed `{`, `(` or `[` take attribute colors until the bracket closes or a blank line appears.
-- A Ruby string literal that spans comma-continued lines loses its string color after the first line.
+- A blank line ends a multi-line attribute hash or a comma-continued line, even though HAML can skip blank lines there. This keeps an unclosed bracket from coloring the rest of the file.
+- A string literal that spans comma-continued lines loses its string color after the first line, and a Ruby `#` comment ends with its line, although HAML joins the lines before running them.
+- Mixing both kinds of continuation in one statement, a pipe line followed by a comma line or the reverse, colors the last joined line as plain text.
+- A silent or HTML comment line ending in ` |` doesn't take in the following pipe line, as HAML does.
+- In `:markdown`, `#{}` inside inline code, link URLs and reference definitions isn't colored as Ruby, because the Markdown grammar matches those spans whole.
+- The HAML nested under a bare `/` is colored as a comment, although HAML renders it into the HTML comment.
 - Under Nord, Ruby identifiers inside `#{}` within a string take the string color. Nord does the same in Ruby files.
-- Toggle Line Comment on a comma-continued Ruby line inserts Ruby's `#`. HAML joins those lines before running them, so commenting out one of them breaks the call either way.
+- Toggle Line Comment on a Ruby line continued with a comma or `|` inserts Ruby's `#`. HAML joins those lines before running them, so commenting out one of them breaks the code either way.

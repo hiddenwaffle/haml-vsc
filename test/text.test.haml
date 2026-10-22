@@ -11,9 +11,12 @@ Nested #{ {a: 1}[:a] } braces
 -#             ^ punctuation.section.scope.end.ruby
 -#                   ^ punctuation.section.embedded.end.haml
 -#                     ^^^^^^ meta.text.haml - meta.interpolation.haml
-\#{escaped} stays literal
--#<-- constant.character.escape.haml
--#^^^^^^^^^ meta.text.haml - meta.interpolation.haml
+\#{x} after a line escape still interpolates
+-#<- constant.character.escape.haml
+-#<~-- meta.text.haml meta.interpolation.haml punctuation.section.embedded.begin.haml
+\\#{literal} needs a second backslash at line start
+-#<--- constant.character.escape.haml
+-# ^^^^^^^^^ meta.text.haml - meta.interpolation.haml
 \= not script
 -#<- constant.character.escape.haml
 -#<~------------ meta.text.haml - punctuation.section.embedded.begin.haml
@@ -55,3 +58,64 @@ Fish &amp; chips &#169; &#x00A9;
 -#<--- entity.name.tag.doctype.haml
 Lines ending with pipes |
 -#                      ^ punctuation.separator.continuation.haml
+Look at \\#{h word} lack of backslash: \#{foo}
+-#      ^^ meta.text.haml constant.character.escape.haml - meta.interpolation.haml
+-#        ^^ meta.interpolation.haml punctuation.section.embedded.begin.haml
+-#          ^^^^^^ meta.interpolation.haml meta.embedded.line.ruby
+-#                                     ^^ constant.character.escape.haml
+-#                                       ^^^^^ meta.text.haml - meta.interpolation.haml
+Hello #@name and #$gvar
+-#    ^^ meta.text.haml meta.interpolation.haml
+-#     ^^^^^ meta.interpolation.haml meta.embedded.line.ruby
+-#                ^^^^^ meta.interpolation.haml meta.embedded.line.ruby
+-#           ^^^ meta.text.haml - meta.interpolation.haml
+#@count posts found
+-#<------- meta.text.haml meta.interpolation.haml - meta.tag.haml
+-#      ^^^^^^^^^^^ meta.text.haml - meta.interpolation.haml
+Not \#@x here
+-#  ^^ constant.character.escape.haml
+-#    ^^^^^^^ meta.text.haml - meta.interpolation.haml
+<a href="#{url}">link</a>
+-#       ^^ meta.interpolation.haml punctuation.section.embedded.begin.haml
+-#         ^^^ meta.interpolation.haml meta.embedded.line.ruby
+<!-- build #{version} -->
+-#           ^^^^^^^ meta.interpolation.haml meta.embedded.line.ruby
+<p>\#{literal}</p>
+-# ^^ constant.character.escape.haml
+-#   ^^^^^^^^^ - meta.interpolation.haml meta.embedded.line.ruby
+!!!5
+-#<--- meta.tag.metadata.doctype.haml entity.name.tag.doctype.haml
+-# ^ entity.other.attribute-name.doctype.haml
+%p.links
+  = link_to "A", a_path
+  |
+-#^ meta.text.haml - punctuation.separator.continuation.haml
+  = link_to "B", b_path
+-#  ^^^^^^^ meta.embedded.line.ruby
+Our product is |
+-#             ^ punctuation.separator.continuation.haml
+  #1 in sales and |
+-#^^^^^^^^^^^^^^^ meta.text.haml - meta.tag.haml entity.other.attribute-name.id.haml
+  - says the press |
+-#^^^^^^^^^^^^^^^^ meta.text.haml - meta.line.script.haml meta.embedded.line.ruby
+  the best. |
+-#^^^^^^^^^ meta.text.haml - meta.embedded.line.ruby
+%p after text pipes
+-#<- meta.tag.haml punctuation.definition.tag.haml - meta.text.haml
+%p Prices start at |
+  -5% off and |
+-#^^^^^^^^^^^ meta.tag.haml meta.text.haml - meta.line.script.haml meta.embedded.line.ruby
+  .99 cents |
+-#^^^^^^^^^ meta.text.haml - entity.other.attribute-name.class.haml
+  = not ruby |
+-#^^^^^^^^^^ meta.text.haml - meta.embedded.line.ruby
+%p after tag text pipes
+-#<- meta.tag.haml punctuation.definition.tag.haml - meta.text.haml
+== Total #{x} |
+-#<-- punctuation.definition.text.haml
+  = more |
+-#^^^^^^ meta.text.haml - meta.embedded.line.ruby
+%p back
+-#<- meta.tag.haml punctuation.definition.tag.haml
+%h1 Welcome, #{@user.name}!
+-#                   ^^^^ meta.interpolation.haml meta.embedded.line.ruby meta.function-call.ruby entity.name.function.ruby

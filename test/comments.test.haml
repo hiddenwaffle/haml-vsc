@@ -29,3 +29,8 @@
 -#<-- comment.line.conditional.haml punctuation.definition.comment.haml
 - # ruby comment is script
 -#<- punctuation.section.embedded.begin.haml - comment.block.silent.haml
+/ Generated for #{user.name}
+-#              ^^ comment.block.html.haml meta.interpolation.haml punctuation.section.embedded.begin.haml
+-#                ^^^^ meta.interpolation.haml meta.embedded.line.ruby
+-# Silent #{not.interpolated}
+-#        ^^ comment.block.silent.haml - meta.interpolation.haml

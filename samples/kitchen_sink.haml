@@ -35,6 +35,8 @@
       %p
         = render partial: "shared/footer",
           locals: { year: Time.current.year }
+      %blockquote= h("A long quote that " + |
+                     "continues with pipes.") |
       &= "Escaped <output>"
       != "<strong>raw</strong>"
       == Interpolated #{Time.now.year} text

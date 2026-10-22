@@ -65,3 +65,21 @@
 -#<~- meta.tag.haml - meta.embedded.block.javascript
 :javascript not a filter because of trailing text
 -#<----------- meta.text.haml - entity.name.function.filter.haml
+:JavaScript
+-#<----------- meta.filter.javascript.haml entity.name.function.filter.haml
+  var x = 1;
+-#^^^ meta.embedded.block.javascript
+:ruby
+  text = <<~EOS
+    hello
+  EOS
+  y = 1
+-#^ meta.embedded.block.ruby - string.unquoted.heredoc.ruby
+:plain
+  last line |
+-#          ^ meta.filter.haml meta.text.haml - punctuation.separator.continuation.haml
+:javascript
+  var n = "#@count";
+-#         ^^ meta.embedded.block.javascript meta.interpolation.haml
+%p end of filters
+-#<- meta.tag.haml - meta.filter.haml
