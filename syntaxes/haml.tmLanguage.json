@@ -39,12 +39,13 @@
   },
   "repository": {
     "silent_comment": {
+      "comment": "In a Markdown list, the list consumes up to 4 spaces of every line, which can include this block's indentation. The lookbehind captures the run of spaces consumed before this line, and the while's first branch continues the block on a later line with a longer run consumed, which is indented deeper. html_comment and the filters work the same way. In a .haml file the capture is empty, and that branch can't match.",
       "name": "comment.block.silent.haml",
-      "begin": "(?:^|\\G)([ \\t]*)(-#)",
+      "begin": "(?:^|\\G)(?<=(?:^|[^ \\t])([ \\t]*))([ \\t]*)(-#)",
       "beginCaptures": {
-        "2": { "name": "punctuation.definition.comment.haml" }
+        "3": { "name": "punctuation.definition.comment.haml" }
       },
-      "while": "(?:^|\\G)(?=\\1[ \\t]|[ \\t]*$)"
+      "while": "(?<=(?:^|[^ \\t])\\1[ \\t]+)\\G|(?:^|\\G)(?=\\2[ \\t]|[ \\t]*$)"
     },
     "conditional_comment": {
       "name": "comment.line.conditional.haml",
@@ -56,11 +57,11 @@
     "html_comment": {
       "comment": "HAML evaluates interpolation in HTML comments, so it keeps its Ruby colors here.",
       "name": "comment.block.html.haml",
-      "begin": "(?:^|\\G)([ \\t]*)(/)",
+      "begin": "(?:^|\\G)(?<=(?:^|[^ \\t])([ \\t]*))([ \\t]*)(/)",
       "beginCaptures": {
-        "2": { "name": "punctuation.definition.comment.haml" }
+        "3": { "name": "punctuation.definition.comment.haml" }
       },
-      "while": "(?:^|\\G)(?=\\1[ \\t]|[ \\t]*$)",
+      "while": "(?<=(?:^|[^ \\t])\\1[ \\t]+)\\G|(?:^|\\G)(?=\\2[ \\t]|[ \\t]*$)",
       "patterns": [
         { "include": "#escaped_interpolation" },
         { "include": "#interpolation" },
@@ -91,92 +92,92 @@
     },
     "filter_javascript": {
       "name": "meta.filter.javascript.haml meta.filter.interpolated.haml",
-      "begin": "(?:^|\\G)([ \\t]*)(:(?i:javascript))[ \\t]*$",
+      "begin": "(?:^|\\G)(?<=(?:^|[^ \\t])([ \\t]*))([ \\t]*)(:(?i:javascript))[ \\t]*$",
       "beginCaptures": {
-        "2": { "name": "entity.name.function.filter.haml" }
+        "3": { "name": "entity.name.function.filter.haml" }
       },
-      "while": "(?:^|\\G)\\1(?: {1,2}|\\t)|(?:^|\\G)(?=[ \\t]*$)",
+      "while": "(?<=(?:^|[^ \\t])\\1[ \\t]+)\\G|(?:^|\\G)\\2(?: {1,2}|\\t)|(?:^|\\G)(?=[ \\t]*$)",
       "contentName": "meta.embedded.block.javascript",
       "patterns": [{ "include": "source.js" }]
     },
     "filter_css": {
       "name": "meta.filter.css.haml meta.filter.interpolated.haml",
-      "begin": "(?:^|\\G)([ \\t]*)(:(?i:css))[ \\t]*$",
+      "begin": "(?:^|\\G)(?<=(?:^|[^ \\t])([ \\t]*))([ \\t]*)(:(?i:css))[ \\t]*$",
       "beginCaptures": {
-        "2": { "name": "entity.name.function.filter.haml" }
+        "3": { "name": "entity.name.function.filter.haml" }
       },
-      "while": "(?:^|\\G)\\1(?: {1,2}|\\t)|(?:^|\\G)(?=[ \\t]*$)",
+      "while": "(?<=(?:^|[^ \\t])\\1[ \\t]+)\\G|(?:^|\\G)\\2(?: {1,2}|\\t)|(?:^|\\G)(?=[ \\t]*$)",
       "contentName": "meta.embedded.block.css",
       "patterns": [{ "include": "source.css" }]
     },
     "filter_scss": {
       "name": "meta.filter.scss.haml meta.filter.interpolated.haml",
-      "begin": "(?:^|\\G)([ \\t]*)(:(?i:scss))[ \\t]*$",
+      "begin": "(?:^|\\G)(?<=(?:^|[^ \\t])([ \\t]*))([ \\t]*)(:(?i:scss))[ \\t]*$",
       "beginCaptures": {
-        "2": { "name": "entity.name.function.filter.haml" }
+        "3": { "name": "entity.name.function.filter.haml" }
       },
-      "while": "(?:^|\\G)\\1(?: {1,2}|\\t)|(?:^|\\G)(?=[ \\t]*$)",
+      "while": "(?<=(?:^|[^ \\t])\\1[ \\t]+)\\G|(?:^|\\G)\\2(?: {1,2}|\\t)|(?:^|\\G)(?=[ \\t]*$)",
       "contentName": "meta.embedded.block.scss",
       "patterns": [{ "include": "source.css.scss" }]
     },
     "filter_sass": {
       "name": "meta.filter.sass.haml meta.filter.interpolated.haml",
-      "begin": "(?:^|\\G)([ \\t]*)(:(?i:sass))[ \\t]*$",
+      "begin": "(?:^|\\G)(?<=(?:^|[^ \\t])([ \\t]*))([ \\t]*)(:(?i:sass))[ \\t]*$",
       "beginCaptures": {
-        "2": { "name": "entity.name.function.filter.haml" }
+        "3": { "name": "entity.name.function.filter.haml" }
       },
-      "while": "(?:^|\\G)\\1(?: {1,2}|\\t)|(?:^|\\G)(?=[ \\t]*$)",
+      "while": "(?<=(?:^|[^ \\t])\\1[ \\t]+)\\G|(?:^|\\G)\\2(?: {1,2}|\\t)|(?:^|\\G)(?=[ \\t]*$)",
       "contentName": "meta.embedded.block.sass",
       "patterns": [{ "include": "source.sass" }]
     },
     "filter_less": {
       "name": "meta.filter.less.haml meta.filter.interpolated.haml",
-      "begin": "(?:^|\\G)([ \\t]*)(:(?i:less))[ \\t]*$",
+      "begin": "(?:^|\\G)(?<=(?:^|[^ \\t])([ \\t]*))([ \\t]*)(:(?i:less))[ \\t]*$",
       "beginCaptures": {
-        "2": { "name": "entity.name.function.filter.haml" }
+        "3": { "name": "entity.name.function.filter.haml" }
       },
-      "while": "(?:^|\\G)\\1(?: {1,2}|\\t)|(?:^|\\G)(?=[ \\t]*$)",
+      "while": "(?<=(?:^|[^ \\t])\\1[ \\t]+)\\G|(?:^|\\G)\\2(?: {1,2}|\\t)|(?:^|\\G)(?=[ \\t]*$)",
       "contentName": "meta.embedded.block.less",
       "patterns": [{ "include": "source.css.less" }]
     },
     "filter_coffee": {
       "name": "meta.filter.coffee.haml meta.filter.interpolated.haml",
-      "begin": "(?:^|\\G)([ \\t]*)(:(?i:coffee(?:script)?))[ \\t]*$",
+      "begin": "(?:^|\\G)(?<=(?:^|[^ \\t])([ \\t]*))([ \\t]*)(:(?i:coffee(?:script)?))[ \\t]*$",
       "beginCaptures": {
-        "2": { "name": "entity.name.function.filter.haml" }
+        "3": { "name": "entity.name.function.filter.haml" }
       },
-      "while": "(?:^|\\G)\\1(?: {1,2}|\\t)|(?:^|\\G)(?=[ \\t]*$)",
+      "while": "(?<=(?:^|[^ \\t])\\1[ \\t]+)\\G|(?:^|\\G)\\2(?: {1,2}|\\t)|(?:^|\\G)(?=[ \\t]*$)",
       "contentName": "meta.embedded.block.coffeescript",
       "patterns": [{ "include": "source.coffee" }]
     },
     "filter_markdown": {
       "name": "meta.filter.markdown.haml meta.filter.interpolated.haml",
-      "begin": "(?:^|\\G)([ \\t]*)(:(?i:markdown))[ \\t]*$",
+      "begin": "(?:^|\\G)(?<=(?:^|[^ \\t])([ \\t]*))([ \\t]*)(:(?i:markdown))[ \\t]*$",
       "beginCaptures": {
-        "2": { "name": "entity.name.function.filter.haml" }
+        "3": { "name": "entity.name.function.filter.haml" }
       },
-      "while": "(?:^|\\G)\\1(?: {1,2}|\\t)|(?:^|\\G)(?=[ \\t]*$)",
+      "while": "(?<=(?:^|[^ \\t])\\1[ \\t]+)\\G|(?:^|\\G)\\2(?: {1,2}|\\t)|(?:^|\\G)(?=[ \\t]*$)",
       "contentName": "meta.embedded.block.markdown",
       "patterns": [{ "include": "text.html.markdown" }]
     },
     "filter_ruby": {
       "name": "meta.filter.ruby.haml",
       "comment": "Unlike the other filters, the while does not consume the indentation, so Ruby rules anchored to the line start, such as heredoc terminators, still match.",
-      "begin": "(?:^|\\G)([ \\t]*)(:(?i:ruby))[ \\t]*$",
+      "begin": "(?:^|\\G)(?<=(?:^|[^ \\t])([ \\t]*))([ \\t]*)(:(?i:ruby))[ \\t]*$",
       "beginCaptures": {
-        "2": { "name": "entity.name.function.filter.haml" }
+        "3": { "name": "entity.name.function.filter.haml" }
       },
-      "while": "(?:^|\\G)(?=\\1[ \\t]|[ \\t]*$)",
+      "while": "(?<=(?:^|[^ \\t])\\1[ \\t]+)\\G|(?:^|\\G)(?=\\2[ \\t]|[ \\t]*$)",
       "contentName": "meta.embedded.block.ruby",
       "patterns": [{ "include": "source.ruby" }]
     },
     "filter_erb": {
       "name": "meta.filter.erb.haml",
-      "begin": "(?:^|\\G)([ \\t]*)(:(?i:erb))[ \\t]*$",
+      "begin": "(?:^|\\G)(?<=(?:^|[^ \\t])([ \\t]*))([ \\t]*)(:(?i:erb))[ \\t]*$",
       "beginCaptures": {
-        "2": { "name": "entity.name.function.filter.haml" }
+        "3": { "name": "entity.name.function.filter.haml" }
       },
-      "while": "(?:^|\\G)\\1(?: {1,2}|\\t)|(?:^|\\G)(?=[ \\t]*$)",
+      "while": "(?<=(?:^|[^ \\t])\\1[ \\t]+)\\G|(?:^|\\G)\\2(?: {1,2}|\\t)|(?:^|\\G)(?=[ \\t]*$)",
       "contentName": "meta.embedded.block.erb",
       "patterns": [
         { "include": "text.html.erb" },
@@ -185,11 +186,11 @@
     },
     "filter_text": {
       "name": "meta.filter.haml",
-      "begin": "(?:^|\\G)([ \\t]*)(:[-\\w]+)[ \\t]*$",
+      "begin": "(?:^|\\G)(?<=(?:^|[^ \\t])([ \\t]*))([ \\t]*)(:[-\\w]+)[ \\t]*$",
       "beginCaptures": {
-        "2": { "name": "entity.name.function.filter.haml" }
+        "3": { "name": "entity.name.function.filter.haml" }
       },
-      "while": "(?:^|\\G)\\1(?: {1,2}|\\t)|(?:^|\\G)(?=[ \\t]*$)",
+      "while": "(?<=(?:^|[^ \\t])\\1[ \\t]+)\\G|(?:^|\\G)\\2(?: {1,2}|\\t)|(?:^|\\G)(?=[ \\t]*$)",
       "contentName": "meta.text.haml",
       "patterns": [{ "include": "#text_interpolated" }]
     },

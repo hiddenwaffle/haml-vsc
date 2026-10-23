@@ -106,3 +106,60 @@ Para
 >%p without a space after the marker
 <!--<~- markup.quote.markdown meta.embedded.block.haml meta.tag.haml punctuation.definition.tag.haml
 >```
+
+- The list consumes up to 4 spaces of every line, so these lines lose all their indentation.
+
+  ```haml
+  -# a comment
+    still the comment
+<!--^^^^^^^^^^^^^^^^^ meta.embedded.block.haml comment.block.silent.haml
+  :javascript
+    a();
+<!--^ meta.embedded.block.haml meta.embedded.block.javascript entity.name.function.js
+
+    b();
+<!--^ meta.embedded.block.haml meta.embedded.block.javascript entity.name.function.js
+  %p after the filter
+<!--<~~- meta.embedded.block.haml meta.tag.haml punctuation.definition.tag.haml - meta.embedded.block.javascript
+  ```
+
+> - A list in a quote, with no blank line before the code block, which would end the list
+>   ```haml
+>   :javascript
+>     a();
+<!--  ^ meta.embedded.block.haml meta.embedded.block.javascript entity.name.function.js
+>   %p after the filter
+<!--^ meta.embedded.block.haml meta.tag.haml punctuation.definition.tag.haml - meta.embedded.block.javascript
+>   ```
+
+- A tag continued with pipes
+
+  ```haml
+  %p= link_to "x", |
+    path |
+  %span after the pipe lines
+<!--<~~- meta.embedded.block.haml meta.tag.haml punctuation.definition.tag.haml
+<!--<~~~---- meta.embedded.block.haml meta.tag.haml entity.name.tag.haml
+  %em next
+<!--<~~- meta.embedded.block.haml meta.tag.haml punctuation.definition.tag.haml
+  ```
+
+> ```haml
+> %div{ a: 1,
+>
+> %p after an unclosed brace and a blank line
+<!--<~~- meta.embedded.block.haml meta.tag.haml punctuation.definition.tag.haml - meta.attributes.hash.haml
+> ```
+
+- Blank lines holding spaces
+
+  ```haml
+  %div[@user, :x
+    
+  %p after an unclosed bracket
+<!--<~~- meta.embedded.block.haml meta.tag.haml punctuation.definition.tag.haml - meta.object-reference.haml
+  = foo(a,
+    
+  %p after a comma line
+<!--<~~- meta.embedded.block.haml meta.tag.haml punctuation.definition.tag.haml - meta.line.script.haml
+  ```
