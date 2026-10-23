@@ -183,12 +183,17 @@ In Markdown code blocks, Nord's Markdown rules also apply. Tokens with no color 
 
 Observed:
 
-- A `git clone` into `~/.vscode/extensions` loads.
+- A `git clone` into `~/.vscode/extensions` while VS Code was running loaded on one machine but not on another. There, after a restart, `extensions.json` didn't list the extension and `.obsolete` did. Moving the folder out, quitting and restarting VS Code, and moving the folder back in while it ran fixed it. `extensions.json` then listed the extension, and `.obsolete` was gone.
 - A symbolic link there pointing to a clone elsewhere did not load. Reading VS Code's source suggested it would, and the cause is unknown.
+
+Read from VS Code's source, which explains the failed clone:
+
+- `extensions.json` in the extensions folder lists the installed extensions. When a folder appears in the extensions folder while VS Code is running, VS Code reads its `package.json` once, right away. If it finds one, it adds the extension to the list and clears the extension's `.obsolete` entry. If it doesn't, as when `git clone` has created the folder but not yet its files, it ignores the folder, and changes inside the folder don't make it look again. Moving a finished clone within one disk avoids that, because the folder appears with its files.
+- Folders that were present when VS Code started count as known, and VS Code ignores them if they reappear until it fully quits.
+- At startup VS Code marks folders missing from the list in `.obsolete`, but it only deletes extensions it installed itself, so it never deletes a clone.
 
 Read from VS Code's source but not tested:
 
-- `extensions.json` in the extensions folder lists the installed extensions. A folder placed there by hand is added to that list only if it appears while VS Code is running. At startup VS Code marks folders missing from the list in `.obsolete`, but it only deletes extensions it installed itself, so it never deletes a clone.
 - `git pull` only changes files inside a listed folder, so VS Code can be open or closed while it runs.
 - The list records each extension's ID (`publisher.name`) and version. A pulled `version` change makes the folder look outdated at the next startup. The source suggests the extension keeps loading anyway, but leaving `version` alone avoids the question. Changing `name` or `publisher` changes the ID, so the folder would probably need re-adding while VS Code runs.
 - VS Code caches what it read from each `package.json` and checks the cache after starting, so a changed `package.json` takes a second reload. The grammar and language configuration are read from disk each time a window starts.

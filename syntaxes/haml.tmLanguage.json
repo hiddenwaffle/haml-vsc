@@ -262,7 +262,7 @@
         {
           "comment": "Ruby that ends in a comma continues on the next line, unless the comma is a character literal (?, or ?\\,). Each line is tokenized on its own so an unclosed bracket cannot swallow the rest of the file.",
           "begin": "(?=.*,[ \\t]*$)(?!.*(?:\\W\\?|\\?\\\\),[ \\t]*$)",
-          "end": "(?<=[^,\\s]|\\W\\?,|\\?\\\\,)(?=[ \\t]*$)|^(?=[ \\t]*$)",
+          "end": "(?<=[^,\\s]|\\W\\?,|\\?\\\\,)(?=[ \\t]*$)|(?:^|\\G)(?=[ \\t]*$)",
           "patterns": [
             {
               "match": "(.*\\S)",
@@ -322,6 +322,7 @@
       "comment": "Also ends at the start of a line, so the tag closes when a multiline block inside it ends.",
       "end": "$|^",
       "patterns": [
+        { "include": "#line_after_multiline" },
         { "include": "#attributes_hash" },
         { "include": "#attributes_html" },
         { "include": "#object_reference" },
@@ -334,6 +335,12 @@
         { "include": "#inline_text_multiline" },
         { "include": "#inline_text" }
       ]
+    },
+    "line_after_multiline": {
+      "comment": "In a Markdown list or quote, a multiline block inside a tag ends after the list indentation or >, where the tag's end can't match. This reads the rest of that line as a new HAML line. \\G matches only there: right after the tag name, the lookbehind fails, and in a .haml file nothing consumes the start of a line, so the tag ends at ^ first.",
+      "begin": "(?<![-:\\w@])\\G",
+      "end": "$",
+      "patterns": [{ "include": "$self" }]
     },
     "class_and_id": {
       "patterns": [
@@ -359,7 +366,7 @@
       "beginCaptures": {
         "0": { "name": "punctuation.section.attributes.begin.haml" }
       },
-      "end": "\\}|^(?=[ \\t]*$)",
+      "end": "\\}|(?:^|(?<!\\{)\\G)(?=[ \\t]*$)",
       "endCaptures": {
         "0": { "name": "punctuation.section.attributes.end.haml" }
       },
@@ -377,7 +384,7 @@
       "beginCaptures": {
         "0": { "name": "punctuation.section.scope.begin.ruby" }
       },
-      "end": "\\}|^(?=[ \\t]*$)",
+      "end": "\\}|(?:^|(?<!\\{)\\G)(?=[ \\t]*$)",
       "endCaptures": {
         "0": { "name": "punctuation.section.scope.end.ruby" }
       },
@@ -418,7 +425,7 @@
       "beginCaptures": {
         "0": { "name": "punctuation.section.attributes.begin.haml" }
       },
-      "end": "\\)|^(?=[ \\t]*$)",
+      "end": "\\)|(?:^|(?<!\\()\\G)(?=[ \\t]*$)",
       "endCaptures": {
         "0": { "name": "punctuation.section.attributes.end.haml" }
       },
@@ -491,7 +498,7 @@
       "beginCaptures": {
         "0": { "name": "punctuation.section.object-reference.begin.haml" }
       },
-      "end": "\\]|^(?=[ \\t]*$)",
+      "end": "\\]|(?:^|(?<!\\[)\\G)(?=[ \\t]*$)",
       "endCaptures": {
         "0": { "name": "punctuation.section.object-reference.end.haml" }
       },
@@ -506,7 +513,7 @@
       "beginCaptures": {
         "0": { "name": "punctuation.section.array.begin.ruby" }
       },
-      "end": "\\]|^(?=[ \\t]*$)",
+      "end": "\\]|(?:^|(?<!\\[)\\G)(?=[ \\t]*$)",
       "endCaptures": {
         "0": { "name": "punctuation.section.array.end.ruby" }
       },
