@@ -1,6 +1,6 @@
 # HAML Syntax for VS Code
 
-Syntax highlighting for HAML templates (`.haml`), including the Ruby, JavaScript, CSS and other languages embedded in them. It uses standard token names, so any color theme, Nord included, colors HAML the way it colors HTML, CSS and Ruby. It also colors `` ```haml `` code blocks in Markdown files.
+Syntax highlighting for HAML templates (`.haml`), including the Ruby, JavaScript, CSS and other languages embedded in them. It uses standard token names, so any color theme, Nord included, colors HAML the way it colors HTML, CSS and Ruby. It also colors `` ```haml `` code blocks in Markdown files. VS Code's built-in Emmet works in `.haml` files too and expands abbreviations such as `ul>li.item*2` into HAML.
 
 ## Install
 

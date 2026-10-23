@@ -153,6 +153,8 @@ Markdown's list rule consumes up to 4 spaces of every line in a list item. Under
 
 vscode-textmate applies only the outermost grammar's `injections`, so those in the HAML grammar don't run inside a code block. [Known limitations](#known-limitations) lists what that leaves uncovered.
 
+The Markdown preview colors `haml` code blocks too, and tells comments apart from code. It probably uses its own highlighter instead of TextMate grammars, so this extension likely plays no part in that. Disabling the extension and opening the preview again would confirm it.
+
 ### Scope names and colors
 
 The grammar uses the standard scope names that VS Code's HTML, CSS and Ruby grammars use, with no theme-specific scopes. Tokenizing [samples/kitchen_sink.haml](samples/kitchen_sink.haml) with [Nord](https://github.com/nordtheme/visual-studio-code)'s theme file (`npm run colors`) gave these colors:
@@ -215,4 +217,3 @@ Read from VS Code's source but not tested:
 - Under Nord, Ruby identifiers inside `#{}` within a string take the string color. Nord does the same in Ruby files.
 - Toggle Line Comment on a Ruby line continued with a comma or `|` inserts Ruby's `#`. HAML joins those lines before running them, so commenting out one of them breaks the code either way.
 - In Markdown code blocks, `#{}` isn't colored as Ruby in interpolated filters such as `:javascript` or in raw HTML lines, and a trailing `|` inside an open bracket or string takes Ruby's color. Both rely on the HAML grammar's `injections`.
-- The Markdown preview probably uses its own highlighter instead of TextMate grammars, so this extension likely doesn't change how it shows HAML code blocks. This hasn't been checked.
