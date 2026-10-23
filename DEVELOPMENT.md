@@ -47,7 +47,7 @@ npm run colors -- samples/kitchen_sink.haml path/to/theme.json
 
 `npm run tokenize` prints the scopes of every token. It reads HAML from standard input when given no file, and tokenizes `.md` files as Markdown.
 
-`npm run compare` tokenizes each file twice, with the grammars as committed at `HEAD` and as they are now, and prints only the tokens that differ. Add `--rev` and a commit to compare with another revision. Running it on the sample and the test files after a grammar change shows side effects that no assertion covers.
+`npm run compare` tokenizes each file twice, with the grammars as committed at `HEAD` and as they are now, and prints only the tokens that differ. Add `--rev` and a commit to compare with another revision. Running it on the sample and the test files after a grammar change shows side effects that no assertion covers. In test files it skips the header and assertion lines, as `npm test` does, and reports line numbers in the file.
 
 `npm run colors` prints the color a theme gives each token, with the token's language and token type. It takes the theme's JSON file, follows the theme's `include`, and uses its `editor.foreground` for tokens the theme doesn't color. Nord's file is `themes/nord-color-theme.json`, both in [Nord's repository](https://github.com/nordtheme/visual-studio-code) and, probably, in Nord's folder under `~/.vscode/extensions`. The languages come from this extension's `package.json` only, so in a Markdown file, code in other languages shows as `markdown`.
 
@@ -80,7 +80,7 @@ TextMate grammars match one line at a time, while HAML depends on indentation. M
 
 ### Line types
 
-Each root rule matches from the start of a line, and the first matching rule in the root `patterns` list wins. Order matters where one marker starts another: `conditional_comment` comes before `html_comment` (both start with `/`), and `interpolated_text_line` comes before `script_line` (`==` starts with `=`).
+Each root rule matches from the start of a line, or in a Markdown list or quote from where the list indentation or `>` ends (see [HAML code blocks in Markdown](#haml-code-blocks-in-markdown)). The first matching rule in the root `patterns` list wins. Order matters where one marker starts another: `conditional_comment` comes before `html_comment` (both start with `/`), and `interpolated_text_line` comes before `script_line` (`==` starts with `=`).
 
 | Rule | Lines |
 | --- | --- |
@@ -145,7 +145,9 @@ Filter names match in any case, because HAML lowercases them. Generic filters ke
 
 [syntaxes/markdown_fences.tmLanguage.json](syntaxes/markdown_fences.tmLanguage.json) is injected into VS Code's Markdown grammar through `injectTo` in `package.json`. Its one rule is a copy of the Ruby code block rule in VS Code's Markdown grammar, with `haml` as the only language name, so it accepts the same fences: three or more backticks or tildes, any indentation, the name in any case, and text after the name. The `L:` prefix of its `injectionSelector` puts it ahead of the Markdown grammar's own rule for fences in languages it doesn't know. The selector leaves out indented code blocks and the inside of fences in other languages, where Markdown shows text as is, but not `` ```markdown `` blocks, whose content is Markdown again.
 
-vscode-textmate applies only the outermost grammar's `injections`, so those in the HAML grammar don't run inside a code block. [Known limitations](#known-limitations) lists what that changes.
+In a list item or block quote, Markdown's rules consume the list indentation or `>` at the start of each line before HAML's rules see it. So that HAML's rules still match there, every line-start anchor in a `begin`, `match` or `while` pattern is `(?:^|\G)` instead of `^`, and new line rules should follow suit. vscode-textmate lets `\G` match only where the enclosing rule's `begin` or `while` match ended, which in a code block is just after the indentation or `>`. In a `.haml` file nothing consumes text at the start of a line before the line rules run, so `\G` matches only where `^` already does, and `npm run compare` shows no change in the sample or the test files. The `end` patterns keep `^`, because there `\G` also matches right after the rule's own `begin`, which would end a tag as soon as it started.
+
+vscode-textmate applies only the outermost grammar's `injections`, so those in the HAML grammar don't run inside a code block. [Known limitations](#known-limitations) lists what that and the list and quote handling leave uncovered.
 
 ### Scope names and colors
 
@@ -203,6 +205,8 @@ Read from VS Code's source but not tested:
 - The HAML nested under a bare `/` is colored as a comment, although HAML renders it into the HTML comment.
 - Under Nord, Ruby identifiers inside `#{}` within a string take the string color. Nord does the same in Ruby files.
 - Toggle Line Comment on a Ruby line continued with a comma or `|` inserts Ruby's `#`. HAML joins those lines before running them, so commenting out one of them breaks the code either way.
-- In Markdown, a HAML code block inside a list item or block quote is recognized, but its contents stay uncolored. Each HAML rule starts at the beginning of a line, and the Markdown grammar consumes the list indentation or `>` before HAML sees the line.
+- In Markdown, the list rule consumes up to 4 spaces at the start of every line in a list item. Under a `- ` item, whose content is indented 2 spaces, HAML's top level and its first nested level therefore look the same, so a filter or comment at the top level of a code block loses the coloring of its indented body. Nested one level deeper, as under a tag, they work, and block quotes aren't affected.
+- In a Markdown list or quote, after a tag whose inline Ruby or text continues with a trailing ` |`, the line after the last ` |` is colored as that tag's text.
+- In a Markdown quote, and in a list where the blank line holds spaces, a blank line doesn't end an unclosed bracket, so it runs on to the end of the code block.
 - In Markdown code blocks, `#{}` isn't colored as Ruby in interpolated filters such as `:javascript` or in raw HTML lines, and a trailing `|` inside an open bracket or string takes Ruby's color. Both rely on the HAML grammar's `injections`.
 - The Markdown preview probably uses its own highlighter instead of TextMate grammars, so this extension likely doesn't change how it shows HAML code blocks. This hasn't been checked.

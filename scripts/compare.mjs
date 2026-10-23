@@ -5,7 +5,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
+import { createRequire } from 'node:module';
 import { ROOT, createRegistry, scopeForFile, tokenizeLines } from './registry.mjs';
+
+const require = createRequire(import.meta.url);
+const { parseGrammarTestCase } = require('vscode-tmgrammar-test/dist/unit/index.js');
 
 const args = process.argv.slice(2);
 const revAt = args.indexOf('--rev');
@@ -47,8 +51,24 @@ function missingFrom(a, b) {
   });
 }
 
-for (const file of args) {
+// Test files are tokenized without their header and assertion lines, as npm test
+// does. Assertion lines would otherwise change the result: in HAML they are silent
+// comments that swallow the indented lines under them. lineNumbers maps each
+// remaining line to its line number in the file.
+function readSource(file) {
   const text = fs.readFileSync(file, 'utf8');
+  if (!/\.test\.(haml|md)$/.test(file)) return { text, lineNumbers: null };
+  const { source } = parseGrammarTestCase(text);
+  const fileLines = text.split(/\r?\n/);
+  const lineNumbers = [];
+  for (let i = 1; i < fileLines.length && lineNumbers.length < source.length; i++) {
+    if (fileLines[i] === source[lineNumbers.length]) lineNumbers.push(i + 1);
+  }
+  return { text: source.join('\n'), lineNumbers };
+}
+
+for (const file of args) {
+  const { text, lineNumbers } = readSource(file);
   const scope = scopeForFile(file);
   const oldGrammar = await before.loadGrammar(scope);
   if (!oldGrammar) {
@@ -61,7 +81,7 @@ for (const file of args) {
   now.forEach(({ line, tokens }, i) => {
     if (JSON.stringify(tokens) === JSON.stringify(old[i].tokens)) return;
     changed++;
-    console.log(`${file}:${i + 1}| ${line}`);
+    console.log(`${file}:${lineNumbers ? lineNumbers[i] : i + 1}| ${line}`);
     const removed = missingFrom(old[i].tokens, tokens);
     const added = missingFrom(tokens, old[i].tokens);
     for (const t of removed) console.log(`   - ${t}`);

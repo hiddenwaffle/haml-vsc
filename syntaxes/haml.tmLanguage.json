@@ -40,15 +40,15 @@
   "repository": {
     "silent_comment": {
       "name": "comment.block.silent.haml",
-      "begin": "^([ \\t]*)(-#)",
+      "begin": "(?:^|\\G)([ \\t]*)(-#)",
       "beginCaptures": {
         "2": { "name": "punctuation.definition.comment.haml" }
       },
-      "while": "^(?=\\1[ \\t]|[ \\t]*$)"
+      "while": "(?:^|\\G)(?=\\1[ \\t]|[ \\t]*$)"
     },
     "conditional_comment": {
       "name": "comment.line.conditional.haml",
-      "match": "^[ \\t]*(/!?)(\\[[^\\]]*\\])(.*)$",
+      "match": "(?:^|\\G)[ \\t]*(/!?)(\\[[^\\]]*\\])(.*)$",
       "captures": {
         "1": { "name": "punctuation.definition.comment.haml" }
       }
@@ -56,11 +56,11 @@
     "html_comment": {
       "comment": "HAML evaluates interpolation in HTML comments, so it keeps its Ruby colors here.",
       "name": "comment.block.html.haml",
-      "begin": "^([ \\t]*)(/)",
+      "begin": "(?:^|\\G)([ \\t]*)(/)",
       "beginCaptures": {
         "2": { "name": "punctuation.definition.comment.haml" }
       },
-      "while": "^(?=\\1[ \\t]|[ \\t]*$)",
+      "while": "(?:^|\\G)(?=\\1[ \\t]|[ \\t]*$)",
       "patterns": [
         { "include": "#escaped_interpolation" },
         { "include": "#interpolation" },
@@ -69,7 +69,7 @@
     },
     "doctype": {
       "name": "meta.tag.metadata.doctype.haml",
-      "match": "^[ \\t]*(!!!)(?:[ \\t]*(\\S.*?))?[ \\t]*$",
+      "match": "(?:^|\\G)[ \\t]*(!!!)(?:[ \\t]*(\\S.*?))?[ \\t]*$",
       "captures": {
         "1": { "name": "entity.name.tag.doctype.haml" },
         "2": { "name": "entity.other.attribute-name.doctype.haml" }
@@ -91,92 +91,92 @@
     },
     "filter_javascript": {
       "name": "meta.filter.javascript.haml meta.filter.interpolated.haml",
-      "begin": "^([ \\t]*)(:(?i:javascript))[ \\t]*$",
+      "begin": "(?:^|\\G)([ \\t]*)(:(?i:javascript))[ \\t]*$",
       "beginCaptures": {
         "2": { "name": "entity.name.function.filter.haml" }
       },
-      "while": "^\\1(?: {1,2}|\\t)|^(?=[ \\t]*$)",
+      "while": "(?:^|\\G)\\1(?: {1,2}|\\t)|(?:^|\\G)(?=[ \\t]*$)",
       "contentName": "meta.embedded.block.javascript",
       "patterns": [{ "include": "source.js" }]
     },
     "filter_css": {
       "name": "meta.filter.css.haml meta.filter.interpolated.haml",
-      "begin": "^([ \\t]*)(:(?i:css))[ \\t]*$",
+      "begin": "(?:^|\\G)([ \\t]*)(:(?i:css))[ \\t]*$",
       "beginCaptures": {
         "2": { "name": "entity.name.function.filter.haml" }
       },
-      "while": "^\\1(?: {1,2}|\\t)|^(?=[ \\t]*$)",
+      "while": "(?:^|\\G)\\1(?: {1,2}|\\t)|(?:^|\\G)(?=[ \\t]*$)",
       "contentName": "meta.embedded.block.css",
       "patterns": [{ "include": "source.css" }]
     },
     "filter_scss": {
       "name": "meta.filter.scss.haml meta.filter.interpolated.haml",
-      "begin": "^([ \\t]*)(:(?i:scss))[ \\t]*$",
+      "begin": "(?:^|\\G)([ \\t]*)(:(?i:scss))[ \\t]*$",
       "beginCaptures": {
         "2": { "name": "entity.name.function.filter.haml" }
       },
-      "while": "^\\1(?: {1,2}|\\t)|^(?=[ \\t]*$)",
+      "while": "(?:^|\\G)\\1(?: {1,2}|\\t)|(?:^|\\G)(?=[ \\t]*$)",
       "contentName": "meta.embedded.block.scss",
       "patterns": [{ "include": "source.css.scss" }]
     },
     "filter_sass": {
       "name": "meta.filter.sass.haml meta.filter.interpolated.haml",
-      "begin": "^([ \\t]*)(:(?i:sass))[ \\t]*$",
+      "begin": "(?:^|\\G)([ \\t]*)(:(?i:sass))[ \\t]*$",
       "beginCaptures": {
         "2": { "name": "entity.name.function.filter.haml" }
       },
-      "while": "^\\1(?: {1,2}|\\t)|^(?=[ \\t]*$)",
+      "while": "(?:^|\\G)\\1(?: {1,2}|\\t)|(?:^|\\G)(?=[ \\t]*$)",
       "contentName": "meta.embedded.block.sass",
       "patterns": [{ "include": "source.sass" }]
     },
     "filter_less": {
       "name": "meta.filter.less.haml meta.filter.interpolated.haml",
-      "begin": "^([ \\t]*)(:(?i:less))[ \\t]*$",
+      "begin": "(?:^|\\G)([ \\t]*)(:(?i:less))[ \\t]*$",
       "beginCaptures": {
         "2": { "name": "entity.name.function.filter.haml" }
       },
-      "while": "^\\1(?: {1,2}|\\t)|^(?=[ \\t]*$)",
+      "while": "(?:^|\\G)\\1(?: {1,2}|\\t)|(?:^|\\G)(?=[ \\t]*$)",
       "contentName": "meta.embedded.block.less",
       "patterns": [{ "include": "source.css.less" }]
     },
     "filter_coffee": {
       "name": "meta.filter.coffee.haml meta.filter.interpolated.haml",
-      "begin": "^([ \\t]*)(:(?i:coffee(?:script)?))[ \\t]*$",
+      "begin": "(?:^|\\G)([ \\t]*)(:(?i:coffee(?:script)?))[ \\t]*$",
       "beginCaptures": {
         "2": { "name": "entity.name.function.filter.haml" }
       },
-      "while": "^\\1(?: {1,2}|\\t)|^(?=[ \\t]*$)",
+      "while": "(?:^|\\G)\\1(?: {1,2}|\\t)|(?:^|\\G)(?=[ \\t]*$)",
       "contentName": "meta.embedded.block.coffeescript",
       "patterns": [{ "include": "source.coffee" }]
     },
     "filter_markdown": {
       "name": "meta.filter.markdown.haml meta.filter.interpolated.haml",
-      "begin": "^([ \\t]*)(:(?i:markdown))[ \\t]*$",
+      "begin": "(?:^|\\G)([ \\t]*)(:(?i:markdown))[ \\t]*$",
       "beginCaptures": {
         "2": { "name": "entity.name.function.filter.haml" }
       },
-      "while": "^\\1(?: {1,2}|\\t)|^(?=[ \\t]*$)",
+      "while": "(?:^|\\G)\\1(?: {1,2}|\\t)|(?:^|\\G)(?=[ \\t]*$)",
       "contentName": "meta.embedded.block.markdown",
       "patterns": [{ "include": "text.html.markdown" }]
     },
     "filter_ruby": {
       "name": "meta.filter.ruby.haml",
       "comment": "Unlike the other filters, the while does not consume the indentation, so Ruby rules anchored to the line start, such as heredoc terminators, still match.",
-      "begin": "^([ \\t]*)(:(?i:ruby))[ \\t]*$",
+      "begin": "(?:^|\\G)([ \\t]*)(:(?i:ruby))[ \\t]*$",
       "beginCaptures": {
         "2": { "name": "entity.name.function.filter.haml" }
       },
-      "while": "^(?=\\1[ \\t]|[ \\t]*$)",
+      "while": "(?:^|\\G)(?=\\1[ \\t]|[ \\t]*$)",
       "contentName": "meta.embedded.block.ruby",
       "patterns": [{ "include": "source.ruby" }]
     },
     "filter_erb": {
       "name": "meta.filter.erb.haml",
-      "begin": "^([ \\t]*)(:(?i:erb))[ \\t]*$",
+      "begin": "(?:^|\\G)([ \\t]*)(:(?i:erb))[ \\t]*$",
       "beginCaptures": {
         "2": { "name": "entity.name.function.filter.haml" }
       },
-      "while": "^\\1(?: {1,2}|\\t)|^(?=[ \\t]*$)",
+      "while": "(?:^|\\G)\\1(?: {1,2}|\\t)|(?:^|\\G)(?=[ \\t]*$)",
       "contentName": "meta.embedded.block.erb",
       "patterns": [
         { "include": "text.html.erb" },
@@ -185,18 +185,18 @@
     },
     "filter_text": {
       "name": "meta.filter.haml",
-      "begin": "^([ \\t]*)(:[-\\w]+)[ \\t]*$",
+      "begin": "(?:^|\\G)([ \\t]*)(:[-\\w]+)[ \\t]*$",
       "beginCaptures": {
         "2": { "name": "entity.name.function.filter.haml" }
       },
-      "while": "^\\1(?: {1,2}|\\t)|^(?=[ \\t]*$)",
+      "while": "(?:^|\\G)\\1(?: {1,2}|\\t)|(?:^|\\G)(?=[ \\t]*$)",
       "contentName": "meta.text.haml",
       "patterns": [{ "include": "#text_interpolated" }]
     },
     "text_multiline": {
       "comment": "A text line ending in a space and a pipe. HAML joins the following pipe lines into it before deciding what kind of line it is, so every continuation line is text, whatever it starts with.",
       "name": "meta.multiline.haml",
-      "begin": "^(?=[ \\t]*\\S.* \\|[ \\t]*$)(?![ \\t]*(?:[-~]|[&!]?=(?!=)|[&!]~|%[-:\\w]|\\.[-:\\w@]|#[-:\\w]))(?!.*do\\s*\\|\\s*[^|]*\\s+\\|[ \\t]*$)(.*)$",
+      "begin": "(?:^|\\G)(?=[ \\t]*\\S.* \\|[ \\t]*$)(?![ \\t]*(?:[-~]|[&!]?=(?!=)|[&!]~|%[-:\\w]|\\.[-:\\w@]|#[-:\\w]))(?!.*do\\s*\\|\\s*[^|]*\\s+\\|[ \\t]*$)(.*)$",
       "beginCaptures": {
         "1": {
           "patterns": [
@@ -208,13 +208,13 @@
           ]
         }
       },
-      "while": "^(?:(?=[ \\t]*$)|(?=[ \\t]*\\S.* \\|[ \\t]*$)(?!.*do\\s*\\|\\s*[^|]*\\s+\\|[ \\t]*$))",
+      "while": "(?:^|\\G)(?:(?=[ \\t]*$)|(?=[ \\t]*\\S.* \\|[ \\t]*$)(?!.*do\\s*\\|\\s*[^|]*\\s+\\|[ \\t]*$))",
       "contentName": "meta.text.haml",
       "patterns": [{ "include": "#text" }]
     },
     "escaped_line": {
       "comment": "The backslash escapes only the line type: interpolation after it still applies. Backslashes right after it are counted here, because escaped_interpolation's lookbehind would see the line escape.",
-      "match": "^[ \\t]*(\\\\)((?:\\\\\\\\)*\\\\#(?=[{@$])|(?:\\\\\\\\)+(?=#[{@$]))?(.*)$",
+      "match": "(?:^|\\G)[ \\t]*(\\\\)((?:\\\\\\\\)*\\\\#(?=[{@$])|(?:\\\\\\\\)+(?=#[{@$]))?(.*)$",
       "captures": {
         "1": { "name": "constant.character.escape.haml" },
         "2": { "name": "meta.text.haml constant.character.escape.haml" },
@@ -225,7 +225,7 @@
       }
     },
     "interpolated_text_line": {
-      "match": "^[ \\t]*(&==|!==|==)(.*)$",
+      "match": "(?:^|\\G)[ \\t]*(&==|!==|==)(.*)$",
       "captures": {
         "1": { "name": "punctuation.definition.text.haml" },
         "2": {
@@ -237,11 +237,11 @@
     "script_line_multiline": {
       "comment": "HAML joins a line ending in a space and a pipe with the following lines that also end that way, skipping blank lines. Block arguments written with spaces (do | x |) are not continuations.",
       "name": "meta.line.script.haml meta.multiline.haml",
-      "begin": "^([ \\t]*)(&=|!=|&~|!~|=|~|-(?!#))(?=.* \\|[ \\t]*$)(?!.*do\\s*\\|\\s*[^|]*\\s+\\|[ \\t]*$)",
+      "begin": "(?:^|\\G)([ \\t]*)(&=|!=|&~|!~|=|~|-(?!#))(?=.* \\|[ \\t]*$)(?!.*do\\s*\\|\\s*[^|]*\\s+\\|[ \\t]*$)",
       "beginCaptures": {
         "2": { "name": "punctuation.section.embedded.begin.haml" }
       },
-      "while": "^(?:(?=[ \\t]*$)|(?=[ \\t]*\\S.* \\|[ \\t]*$)(?!.*do\\s*\\|\\s*[^|]*\\s+\\|[ \\t]*$))",
+      "while": "(?:^|\\G)(?:(?=[ \\t]*$)|(?=[ \\t]*\\S.* \\|[ \\t]*$)(?!.*do\\s*\\|\\s*[^|]*\\s+\\|[ \\t]*$))",
       "contentName": "meta.embedded.line.ruby",
       "patterns": [
         { "include": "#multiline_pipe" },
@@ -250,7 +250,7 @@
     },
     "script_line": {
       "name": "meta.line.script.haml",
-      "begin": "^([ \\t]*)(&=|!=|&~|!~|=|~|-(?!#))",
+      "begin": "(?:^|\\G)([ \\t]*)(&=|!=|&~|!~|=|~|-(?!#))",
       "beginCaptures": {
         "2": { "name": "punctuation.section.embedded.begin.haml" }
       },
@@ -302,7 +302,7 @@
       }
     },
     "escaped_text_line": {
-      "match": "^[ \\t]*(&|!)(?=[ \\t]|#\\{)(.*)$",
+      "match": "(?:^|\\G)[ \\t]*(&|!)(?=[ \\t]|#\\{)(.*)$",
       "captures": {
         "1": { "name": "punctuation.definition.text.haml" },
         "2": {
@@ -313,7 +313,7 @@
     },
     "tag": {
       "name": "meta.tag.haml",
-      "begin": "^([ \\t]*)(?=%[-:\\w]|\\.[-:\\w@]|#[-:\\w])(?:(%)([-:\\w]+))?((?:[.#][-:\\w@]+)*)",
+      "begin": "(?:^|\\G)([ \\t]*)(?=%[-:\\w]|\\.[-:\\w@]|#[-:\\w])(?:(%)([-:\\w]+))?((?:[.#][-:\\w@]+)*)",
       "beginCaptures": {
         "2": { "name": "punctuation.definition.tag.haml" },
         "3": { "name": "entity.name.tag.haml" },
@@ -608,7 +608,7 @@
       "beginCaptures": {
         "1": { "name": "punctuation.section.embedded.begin.haml" }
       },
-      "while": "^(?:(?=[ \\t]*$)|(?=[ \\t]*\\S.* \\|[ \\t]*$)(?!.*do\\s*\\|\\s*[^|]*\\s+\\|[ \\t]*$))",
+      "while": "(?:^|\\G)(?:(?=[ \\t]*$)|(?=[ \\t]*\\S.* \\|[ \\t]*$)(?!.*do\\s*\\|\\s*[^|]*\\s+\\|[ \\t]*$))",
       "contentName": "meta.embedded.line.ruby",
       "patterns": [
         { "include": "#multiline_pipe" },
@@ -632,7 +632,7 @@
       "comment": "Inline text that continues with a trailing pipe. HAML joins the lines before deciding what they are, so every continuation line is text.",
       "name": "meta.multiline.haml",
       "begin": "(?=.* \\|[ \\t]*$)(?!.*do\\s*\\|\\s*[^|]*\\s+\\|[ \\t]*$)",
-      "while": "^(?:(?=[ \\t]*$)|(?=[ \\t]*\\S.* \\|[ \\t]*$)(?!.*do\\s*\\|\\s*[^|]*\\s+\\|[ \\t]*$))",
+      "while": "(?:^|\\G)(?:(?=[ \\t]*$)|(?=[ \\t]*\\S.* \\|[ \\t]*$)(?!.*do\\s*\\|\\s*[^|]*\\s+\\|[ \\t]*$))",
       "contentName": "meta.text.haml",
       "patterns": [{ "include": "#text" }]
     },
@@ -648,7 +648,7 @@
     },
     "raw_html_line": {
       "comment": "HAML treats the line as plain text, so interpolation applies anywhere in it, including inside HTML attribute values and comments. The meta.raw-html.haml injection provides it.",
-      "match": "^[ \\t]*(<.*)$",
+      "match": "(?:^|\\G)[ \\t]*(<.*)$",
       "captures": {
         "1": {
           "name": "meta.raw-html.haml",
@@ -659,10 +659,10 @@
     "lone_pipe_line": {
       "comment": "A line holding only a pipe is literal text: HAML needs a space before the pipe, after the indentation.",
       "name": "meta.text.haml",
-      "match": "^[ \\t]*\\|[ \\t]*$"
+      "match": "(?:^|\\G)[ \\t]*\\|[ \\t]*$"
     },
     "plain_text_line": {
-      "match": "^[ \\t]*(.+)$",
+      "match": "(?:^|\\G)[ \\t]*(.+)$",
       "captures": {
         "1": {
           "name": "meta.text.haml",
